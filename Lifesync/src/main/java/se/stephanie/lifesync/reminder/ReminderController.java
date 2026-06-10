@@ -13,18 +13,21 @@ public class ReminderController {
         private final ReminderService reminderService;
 
         public ReminderController(ReminderService reminderService) {
+
             this.reminderService = reminderService;
         }
 
         /* GET */
         @GetMapping
         public List<Reminder> getAllReminders() {
-        return reminderService.getAllReminders();}
+        return reminderService.getAllReminders();
+        }
 
         @GetMapping("/{id}")
         public Reminder getReminderById(@PathVariable Long id) {
-        return reminderService.getReminderById(id);
-    }
+
+            return reminderService.getReminderById(id);
+        }
 
         /* POST */
         @PostMapping
