@@ -27,6 +27,11 @@ public class CalendarEventController {
         return service.getEventById(id);
     }
 
+    @GetMapping("/categories")
+    public EventCategory[] getCategories(){
+        return EventCategory.values();
+    }
+
     /* POST */
 
     @PostMapping

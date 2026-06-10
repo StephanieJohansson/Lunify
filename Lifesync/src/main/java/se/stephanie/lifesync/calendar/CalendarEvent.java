@@ -27,7 +27,8 @@ public class CalendarEvent {
 
     private String location;
 
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private EventCategory category;
 
     private boolean recurring;
 }
