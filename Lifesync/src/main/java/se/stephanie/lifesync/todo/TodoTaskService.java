@@ -16,16 +16,19 @@ public class TodoTaskService {
 
     /* GET */
     public List<TodoTask> getAllTodoTasks() {
+
         return todoTaskRepository.findAll();
     }
 
     public TodoTask getTodoTaskById(Long id) {
+
         return todoTaskRepository.findById(id).orElse(null);
     }
 
 
     /* POST */
     public TodoTask createTodoTask(TodoTask task) {
+
         return todoTaskRepository.save(task);
     }
 
@@ -44,6 +47,7 @@ public class TodoTaskService {
 
     /* DELETE */
     public void deleteTodoTask(Long id) {
+
         todoTaskRepository.deleteById(id);
     }
 }

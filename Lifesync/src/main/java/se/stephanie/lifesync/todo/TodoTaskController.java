@@ -13,16 +13,19 @@ public class TodoTaskController {
     private final TodoTaskService todoTaskService;
 
     public TodoTaskController(TodoTaskService todoTaskService) {
+
         this.todoTaskService = todoTaskService;
     }
 
     @GetMapping
     public List<TodoTask> getAllTodoTasks() {
+
         return todoTaskService.getAllTodoTasks();
     }
 
     @GetMapping("/{id}")
     public TodoTask getTodoTaskById(@PathVariable Long id) {
+
         return todoTaskService.getTodoTaskById(id);
     }
 
