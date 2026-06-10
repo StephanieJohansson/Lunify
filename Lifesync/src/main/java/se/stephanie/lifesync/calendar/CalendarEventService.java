@@ -13,6 +13,8 @@ public class CalendarEventService {
         this.calendarEventRepository = calendarEventRepository;
     }
 
+
+
     /* GET */
 
     public List<CalendarEvent> getAllEvents() {
@@ -27,8 +29,13 @@ public class CalendarEventService {
     /* POST */
 
     public CalendarEvent createEvent(CalendarEvent event) {
+        if (!event.isAllDay() && event.getStartDateTime().isAfter(event.getEndDateTime())) {
+            throw new IllegalArgumentException("Start date/time must be before end date/time for non-all-day events.");
+        }
+
         return calendarEventRepository.save(event);
     }
+    
 
     /* UPDATE */
 

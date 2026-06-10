@@ -1,6 +1,7 @@
 package se.stephanie.lifesync.calendar;
 
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,14 +36,14 @@ public class CalendarEventController {
     /* POST */
 
     @PostMapping
-    public CalendarEvent createEvent(@RequestBody CalendarEvent event) {
+    public CalendarEvent createEvent(@Valid @RequestBody CalendarEvent event) {
         return service.createEvent(event);
     }
 
     /* PUT */
 
     @PutMapping("/{id}")
-    public CalendarEvent updateEvent(@PathVariable Long id, @RequestBody CalendarEvent updatedEvent) {
+    public CalendarEvent updateEvent(@PathVariable Long id, @Valid @RequestBody CalendarEvent updatedEvent) {
         return service.updateEvent(id, updatedEvent);
     }
 
