@@ -2,6 +2,7 @@ package se.stephanie.lifesync.package_tracking;
 
 
 import org.springframework.stereotype.Service;
+import se.stephanie.lifesync.common.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class PackageTrackingService {
 
     public PackageTracking getPackageTrackingById(Long id) {
         return packageTrackingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Package tracking not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Package tracking not found with id: " + id));
     }
 
      /* POST */

@@ -2,6 +2,7 @@ package se.stephanie.lifesync.payment;
 
 
 import org.springframework.stereotype.Service;
+import se.stephanie.lifesync.common.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class PaymentService {
 
     public Payment getPaymentById(Long id) {
         return paymentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Payment not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Payment not found with id: " + id));
     }
 
     /* POST */

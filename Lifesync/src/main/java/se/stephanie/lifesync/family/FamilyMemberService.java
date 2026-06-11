@@ -4,6 +4,7 @@ package se.stephanie.lifesync.family;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import se.stephanie.lifesync.common.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class FamilyMemberService {
 
     public FamilyMember getFamilyMemberByName(@PathVariable String name) {
         return familyMemberRepository.findByName(name)
-                .orElseThrow(() -> new IllegalArgumentException("Family member not found: " + name));
+                .orElseThrow(() -> new ResourceNotFoundException("Family member not found: " + name));
     }
 
         /* POST */
