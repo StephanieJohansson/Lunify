@@ -8,8 +8,14 @@ import { Bell, CheckSquare, CreditCard, Package, Clock } from "lucide-react";
 import UpcomingTasksWidget from "../components/widgets/UpcomingTasksWidget";
 import WeatherWidget from "../components/widgets/WeatherWidget";
 import TodayScheduleWidget from "../components/widgets/TodayScheduleWidget";
+import type { Page } from "../App";
 
-export default function Dashboard() {
+type DashboardProps = {
+    activePage: Page;
+    onPageChange: (page: Page) => void;
+};
+
+export default function Dashboard({ activePage, onPageChange }: DashboardProps) {
     const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
 
     useEffect(() => {
@@ -21,7 +27,7 @@ export default function Dashboard() {
     if (!dashboard) {
         return (
             <div className="flex min-h-screen bg-slate-900 text-white">
-                <Sidebar />
+                <Sidebar activePage={activePage} onPageChange={onPageChange} />
 
                 <main className="flex-1 p-6">
                     <Header />
@@ -33,7 +39,7 @@ export default function Dashboard() {
 
     return (
         <div className="flex min-h-screen bg-slate-900 text-white">
-            <Sidebar />
+            <Sidebar activePage={activePage} onPageChange={onPageChange} />
 
             <main className="flex-1 p-6">
                 <Header />

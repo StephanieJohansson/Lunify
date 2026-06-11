@@ -1,7 +1,17 @@
+import { useState } from "react";
 import Dashboard from "./pages/Dashboard";
+import Todos from "./pages/Todos";
+
+export type Page = "dashboard" | "todos";
 
 function App() {
-    return <Dashboard />;
+    const [page, setPage] = useState<Page>("dashboard");
+
+    if (page === "todos") {
+        return <Todos activePage={page} onPageChange={setPage} />;
+    }
+
+    return <Dashboard activePage={page} onPageChange={setPage} />;
 }
 
 export default App;
