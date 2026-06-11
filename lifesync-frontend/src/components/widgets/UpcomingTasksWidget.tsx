@@ -5,7 +5,9 @@ type UpcomingTasksWidgetProps = {
 };
 
 export default function UpcomingTasksWidget({ todos }: UpcomingTasksWidgetProps) {
-    const visibleTodos = todos.slice(0, 3);
+    const visibleTodos = [...todos]
+        .sort((a, b) => b.id - a.id)
+        .slice(0, 3);
 
     return (
         <section className="rounded-2xl bg-slate-800/80 p-5 shadow-lg">

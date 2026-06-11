@@ -50,10 +50,12 @@ public class TodoTaskService {
 
     /* POST */
     public TodoTask createTodoTask(TodoTask task) {
-        Long userId = 1L; // TODO: Replace with authenticated user from Spring Security
+        Long defaultUserId = 1L; // TODO: replace with authenticated user later
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        User user = userRepository.findById(defaultUserId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Default user not found with id: " + defaultUserId
+                ));
 
         task.setUser(user);
         task.setCompleted(false);
