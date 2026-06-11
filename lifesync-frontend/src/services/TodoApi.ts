@@ -90,3 +90,19 @@ export async function restoreTodo(todoId: number, todo: TodoTask): Promise<TodoT
 
     return response.json();
 }
+
+export async function updateTodo(todo: TodoTask): Promise<TodoTask> {
+    const response = await fetch(`http://localhost:8080/api/todos/${todo.id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(todo),
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to update todo");
+    }
+
+    return response.json();
+}
