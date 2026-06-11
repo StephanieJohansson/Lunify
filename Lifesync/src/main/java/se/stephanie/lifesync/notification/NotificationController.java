@@ -27,6 +27,21 @@ public class NotificationController {
         return service.getNotificationById(id);
     }
 
+    @GetMapping("/user/{userId}/unread")
+    public List<Notification> getUnreadNotificationsForUser(@PathVariable Long userId) {
+        return service.getUnreadNotificationsForUser(userId);
+    }
+
+    @GetMapping("/user/{userId}/read")
+    public List<Notification> getReadNotificationsForUser(@PathVariable Long userId) {
+        return service.getReadNotificationsForUser(userId);
+    }
+
+    @GetMapping("/user/{userId}/sent")
+    public List<Notification> getSentNotificationsForUser(@PathVariable Long userId) {
+        return service.getSentNotificationsForUser(userId);
+    }
+
     /* POST */
     @PostMapping
     public Notification createNotification(@Valid @RequestBody Notification notification) {

@@ -13,12 +13,14 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     public PaymentController(PaymentService paymentService) {
+
         this.paymentService = paymentService;
     }
 
      /* GET */
     @GetMapping
     public List<Payment> getAllPayments() {
+
         return paymentService.getAllPayments();
     }
 
@@ -27,9 +29,23 @@ public class PaymentController {
         return paymentService.getPaymentById(id);
     }
 
+    @GetMapping("/unpaid")
+    public List<Payment> getUnpaidPayments() {
+        Long userId = 1L; //TODO: replace with logged-in user from spring security
+        return paymentService.getUnpaidPayments(userId);
+
+    }
+
+    @GetMapping("/paid")
+    public List<Payment> getPaidPayments() {
+        Long userId = 1L; //TODO: replace with logged-in user from spring security
+        return paymentService.getPaidPayments(userId);
+    }
+
     /* POST */
     @PostMapping
     public Payment createPayment(@Valid @RequestBody Payment payment) {
+
         return paymentService.createPayment(payment);
     }
 
@@ -42,6 +58,7 @@ public class PaymentController {
     /* DELETE */
     @DeleteMapping("/{id}")
     public void deletePayment(@PathVariable Long id) {
+
         paymentService.deletePayment(id);
     }
 }

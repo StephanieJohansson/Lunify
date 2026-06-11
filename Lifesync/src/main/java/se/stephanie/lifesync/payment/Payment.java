@@ -1,13 +1,11 @@
 package se.stephanie.lifesync.payment;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import se.stephanie.lifesync.user.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -35,4 +33,8 @@ public class Payment {
     private boolean paid;
 
     private boolean recurring;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

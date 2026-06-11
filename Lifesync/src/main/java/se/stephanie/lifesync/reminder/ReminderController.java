@@ -29,6 +29,11 @@ public class ReminderController {
             return reminderService.getReminderById(id);
         }
 
+        @GetMapping("/upcoming")
+        public List<Reminder> getUpcommingReminders(){
+                return reminderService.getUpcommingReminders();
+        }
+
         /* POST */
         @PostMapping
         public Reminder createReminder(@Valid @RequestBody Reminder reminder) {

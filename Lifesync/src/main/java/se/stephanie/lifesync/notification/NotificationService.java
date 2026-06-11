@@ -49,7 +49,19 @@ public class NotificationService {
 
        public Notification markAsUnread(Long id) {
         Notification notification = getNotificationById(id);
-        notification.setUnread(true);
+        notification.setRead(false);
         return notificationRepository.save(notification);
        }
+
+       public List<Notification> getUnreadNotificationsForUser(Long userId) {
+        return notificationRepository.findByUserIdAndReadFalse(userId);
+       }
+
+    public List<Notification> getReadNotificationsForUser(Long userId) {
+        return notificationRepository.findByUserIdAndReadTrue(userId);
+    }
+
+    public List<Notification> getSentNotificationsForUser(Long userId) {
+        return notificationRepository.findByUserIdAndSentTrue(userId);
+    }
 }

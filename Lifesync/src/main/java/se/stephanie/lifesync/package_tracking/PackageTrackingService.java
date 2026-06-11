@@ -25,6 +25,14 @@ public class PackageTrackingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Package tracking not found with id: " + id));
     }
 
+    public List<PackageTracking> getDeliveredPackageTrackings(Long userId) {
+        return packageTrackingRepository.findByUserIdAndDeliveredTrue(userId);
+    }
+
+    public List<PackageTracking> getUndeliveredPackageTrackings(Long userId) {
+        return packageTrackingRepository.findByUserIdAndDeliveredFalse(userId);
+    }
+
      /* POST */
     public PackageTracking createPackageTracking(PackageTracking packageTracking) {
         return packageTrackingRepository.save(packageTracking);

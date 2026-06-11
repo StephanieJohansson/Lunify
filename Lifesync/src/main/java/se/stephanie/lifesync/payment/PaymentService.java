@@ -26,6 +26,14 @@ public class PaymentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Payment not found with id: " + id));
     }
 
+    public List<Payment> getUnpaidPayments(Long userId) {
+        return paymentRepository.findByUserIdAndPaidFalse(userId);
+    }
+
+    public List<Payment> getPaidPayments(Long userId) {
+        return paymentRepository.findByUserIdAndPaidTrue(userId);
+    }
+
     /* POST */
     public Payment createPayment(Payment payment) {
         return paymentRepository.save(payment);

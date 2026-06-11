@@ -3,6 +3,7 @@ package se.stephanie.lifesync.reminder;
 import org.springframework.stereotype.Service;
 import se.stephanie.lifesync.common.exception.ResourceNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,6 +23,10 @@ public class ReminderService {
     public Reminder getReminderById(Long id) {
         return reminderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Reminder not found with id: " + id));
+    }
+
+    public List<Reminder> getUpcommingReminders(){
+        return reminderRepository.findByReminderTimeAfterAndCompletedFalse(LocalDateTime.now());
     }
 
         /* POST */

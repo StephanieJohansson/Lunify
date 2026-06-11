@@ -13,18 +13,33 @@ public class PackageTrackingController {
         private final PackageTrackingService service;
 
         public PackageTrackingController(PackageTrackingService service) {
+
             this.service = service;
         }
 
         /* GET */
     @GetMapping
     public List<PackageTracking> getAllPackageTrackings() {
+
         return service.getAllPackageTrackings();
     }
 
     @GetMapping("/{id}")
     public PackageTracking getPackageTrackingById(@PathVariable Long id) {
+
         return service.getPackageTrackingById(id);
+    }
+
+    @GetMapping("/delivered")
+    public List<PackageTracking> getDeliveredPackages() {
+        Long userId = 1L; //TODO: replace with logged-in user from spring security
+        return service.getDeliveredPackageTrackings(userId);
+    }
+
+    @GetMapping("/undelivered")
+    public List<PackageTracking> getUndeliveredPackages() {
+        Long userId = 1L; //TODO: replace with logged-in user from spring security
+        return service.getUndeliveredPackageTrackings(userId);
     }
 
         /* POST */
@@ -42,6 +57,7 @@ public class PackageTrackingController {
         /* DELETE */
     @DeleteMapping("/{id}")
     public void deletePackageTracking(@PathVariable Long id) {
+
         service.deletePackageTracking(id);
     }
 }

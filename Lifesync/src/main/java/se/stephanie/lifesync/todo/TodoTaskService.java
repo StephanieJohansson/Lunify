@@ -27,6 +27,22 @@ public class TodoTaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Todo task not found with id: " + id));
     }
 
+    public List<TodoTask> getPendingTodoTask() {
+        return todoTaskRepository.findByCompletedFalse();
+    }
+
+    public List<TodoTask> getCompletedTodoTask() {
+        return todoTaskRepository.findByCompletedTrue();
+    }
+
+    public long countPendingTodoTask() {
+        return todoTaskRepository.countByCompletedFalse();
+    }
+
+    public long countCompletedTodoTask() {
+        return todoTaskRepository.countByCompletedTrue();
+    }
+
 
     /* POST */
     public TodoTask createTodoTask(TodoTask task) {
@@ -53,4 +69,5 @@ public class TodoTaskService {
 
         todoTaskRepository.deleteById(id);
     }
+
 }
