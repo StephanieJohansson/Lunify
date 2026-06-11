@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import DashboardCard from "../components/DashboardCard";
+import Header from "../components/Header";
+import Sidebar from "../components/Sidebar";
 import { getDashboardSummary } from "../services/DashboardApi";
 import type { DashboardSummary } from "../types/DashboardSummary";
 
@@ -14,43 +16,32 @@ export default function Dashboard() {
 
     if (!dashboard) {
         return (
-            <div className="min-h-screen bg-slate-900 text-white p-6">
-                <h1 className="text-3xl font-bold mb-4">LifeSync Dashboard</h1>
-                <p>Laddar...</p>
+            <div className="flex min-h-screen bg-slate-900 text-white">
+                <Sidebar />
+
+                <main className="flex-1 p-6">
+                    <Header />
+                    <p className="text-slate-400">Laddar...</p>
+                </main>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-slate-900 text-white p-6">
-            <h1 className="text-3xl font-bold mb-6">LifeSync Dashboard</h1>
+        <div className="flex min-h-screen bg-slate-900 text-white">
+            <Sidebar />
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <DashboardCard
-                    title="Pending Todos"
-                    value={dashboard.pendingTodos}
-                />
+            <main className="flex-1 p-6">
+                <Header />
 
-                <DashboardCard
-                    title="Unread Notifications"
-                    value={dashboard.unreadNotifications}
-                />
-
-                <DashboardCard
-                    title="Unpaid Payments"
-                    value={dashboard.unpaidPayments}
-                />
-
-                <DashboardCard
-                    title="Packages In Transit"
-                    value={dashboard.packagesInTransit}
-                />
-
-                <DashboardCard
-                    title="Upcoming Reminders"
-                    value={dashboard.upcomingReminders}
-                />
-            </div>
+                <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                    <DashboardCard title="Todos" value={dashboard.pendingTodos} />
+                    <DashboardCard title="Notifications" value={dashboard.unreadNotifications} />
+                    <DashboardCard title="Payments" value={dashboard.unpaidPayments} />
+                    <DashboardCard title="Packages" value={dashboard.packagesInTransit} />
+                    <DashboardCard title="Reminders" value={dashboard.upcomingReminders} />
+                </section>
+            </main>
         </div>
     );
 }
