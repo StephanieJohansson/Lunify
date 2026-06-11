@@ -5,11 +5,20 @@ type DashboardCardProps = {
     title: string;
     value: number;
     icon: ReactNode;
+    onClick?: () => void
 };
 
-export default function DashboardCard({ title, value, icon }: DashboardCardProps) {
+export default function DashboardCard({ title, value, icon, onClick,
+                                      }: DashboardCardProps) {
     return (
-        <div className="rounded-2xl bg-slate-800/80 p-5 shadow-lg transition hover:-translate-y-1 hover:bg-slate-700/80">
+        <div
+            onClick={onClick}
+            className="
+        rounded-2xl bg-slate-800 p-4
+        transition cursor-pointer
+        hover:bg-slate-700
+    "
+        >
             <div className="mb-4 flex items-center justify-between">
                 <p className="text-sm text-slate-400">{title}</p>
                 <div className="rounded-xl bg-violet-500/20 p-2 text-violet-300">

@@ -39,7 +39,8 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
                                     key={todo.id}
                                     className="rounded-xl bg-slate-900/60 p-4"
                                 >
-                                    <p className="font-medium">{todo.title}</p>
+                                    <h3 className="font-medium text-white">{todo.title}</h3>
+
                                     {todo.description && (
                                         <p className="mt-1 text-sm text-slate-400">
                                             {todo.description}

@@ -45,7 +45,12 @@ export default function Dashboard({ activePage, onPageChange }: DashboardProps) 
                 <Header />
 
                 <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-                    <DashboardCard title="Todos" value={dashboard.pendingTodos} icon={<CheckSquare size={22} />} />
+                    <DashboardCard
+                        title="Todos"
+                        value={dashboard.pendingTodos}
+                        onClick={() => onPageChange("todos")}
+                        icon={<CheckSquare size={22}
+                        />} />
                     <DashboardCard title="Notifications" value={dashboard.unreadNotifications} icon={<Bell size={22} />} />
                     <DashboardCard title="Payments" value={dashboard.unpaidPayments} icon={<CreditCard size={22} />} />
                     <DashboardCard title="Packages" value={dashboard.packagesInTransit} icon={<Package size={22} />} />
