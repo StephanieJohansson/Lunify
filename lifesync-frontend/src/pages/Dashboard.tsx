@@ -45,13 +45,13 @@ export default function Dashboard() {
                     <DashboardCard title="Packages" value={dashboard.packagesInTransit} icon={<Package size={22} />} />
                     <DashboardCard title="Reminders" value={dashboard.upcomingReminders} icon={<Clock size={22} />} />
                 </section>
-            </main>
 
-            <section className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
-                <TodayScheduleWidget />
-                <UpcomingTasksWidget />
-                <WeatherWidget />
-            </section>
+                <section className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3">
+                    <TodayScheduleWidget />
+                    <UpcomingTasksWidget />
+                    <WeatherWidget />
+                </section>
+            </main>
         </div>
     );
 }
