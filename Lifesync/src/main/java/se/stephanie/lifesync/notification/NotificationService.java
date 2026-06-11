@@ -1,6 +1,7 @@
 package se.stephanie.lifesync.notification;
 
 import org.springframework.stereotype.Service;
+import se.stephanie.lifesync.common.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class NotificationService {
 
         public Notification getNotificationById(Long id) {
             return notificationRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Notification not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + id));
         }
 
         public Notification createNotification(Notification notification) {
@@ -28,14 +29,14 @@ public class NotificationService {
 
         public void deleteNotification(Long id) {
             Notification notification = notificationRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Notification not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + id));
             notificationRepository.delete(notification);
         }
 
 
         public Notification markAsSent(Long id) {
             Notification notification = notificationRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Notification not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + id));
             notification.setSent(true);
             return notificationRepository.save(notification);
         }

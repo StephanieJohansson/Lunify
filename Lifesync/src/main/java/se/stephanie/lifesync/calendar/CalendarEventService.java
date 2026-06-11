@@ -1,6 +1,7 @@
 package se.stephanie.lifesync.calendar;
 
 import org.springframework.stereotype.Service;
+import se.stephanie.lifesync.common.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class CalendarEventService {
 
     public CalendarEvent getEventById(Long id) {
         return calendarEventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Event not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Calendar event not found with id: " + id));
     }
 
     /* POST */

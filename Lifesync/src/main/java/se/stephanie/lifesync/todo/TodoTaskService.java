@@ -2,6 +2,7 @@ package se.stephanie.lifesync.todo;
 
 
 import org.springframework.stereotype.Service;
+import se.stephanie.lifesync.common.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -22,7 +23,8 @@ public class TodoTaskService {
 
     public TodoTask getTodoTaskById(Long id) {
 
-        return todoTaskRepository.findById(id).orElse(null);
+        return todoTaskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Todo task not found with id: " + id));
     }
 
 
@@ -35,7 +37,8 @@ public class TodoTaskService {
     /* PUT */
 
     public TodoTask updateTodoTask(Long id, TodoTask task) {
-        TodoTask existingTask = todoTaskRepository.findById(id).orElse(null);
+        TodoTask existingTask = getTodoTaskById(id);
+
         if (existingTask != null) {
             existingTask.setTitle(task.getTitle());
             existingTask.setDescription(task.getDescription());
