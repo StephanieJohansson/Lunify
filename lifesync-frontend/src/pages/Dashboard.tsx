@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import { getDashboardSummary } from "../services/DashboardApi";
 import type { DashboardSummary } from "../types/DashboardSummary";
+import { Bell, CheckSquare, CreditCard, Package, Clock } from "lucide-react";
 
 export default function Dashboard() {
     const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
@@ -35,11 +36,11 @@ export default function Dashboard() {
                 <Header />
 
                 <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-                    <DashboardCard title="Todos" value={dashboard.pendingTodos} />
-                    <DashboardCard title="Notifications" value={dashboard.unreadNotifications} />
-                    <DashboardCard title="Payments" value={dashboard.unpaidPayments} />
-                    <DashboardCard title="Packages" value={dashboard.packagesInTransit} />
-                    <DashboardCard title="Reminders" value={dashboard.upcomingReminders} />
+                    <DashboardCard title="Todos" value={dashboard.pendingTodos} icon={<CheckSquare size={22} />} />
+                    <DashboardCard title="Notifications" value={dashboard.unreadNotifications} icon={<Bell size={22} />} />
+                    <DashboardCard title="Payments" value={dashboard.unpaidPayments} icon={<CreditCard size={22} />} />
+                    <DashboardCard title="Packages" value={dashboard.packagesInTransit} icon={<Package size={22} />} />
+                    <DashboardCard title="Reminders" value={dashboard.upcomingReminders} icon={<Clock size={22} />} />
                 </section>
             </main>
         </div>

@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Lifesync.iml" filepath="$PROJECT_DIR$/.idea/Lifesync.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Lifesync/Lifesync.iml" filepath="$PROJECT_DIR$/Lifesync/Lifesync.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Lunify.iml" filepath="$PROJECT_DIR$/.idea/Lunify.iml" />
     </modules>
   </component>
 </project>
