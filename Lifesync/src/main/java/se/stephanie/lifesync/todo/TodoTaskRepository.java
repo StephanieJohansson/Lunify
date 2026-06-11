@@ -12,4 +12,6 @@ public interface TodoTaskRepository extends JpaRepository<TodoTask, Long> {
     long countByCompletedFalse();
 
     long countByCompletedTrue();
+
+    long countByUserIdAndCompletedFalse(Long userId);
 }

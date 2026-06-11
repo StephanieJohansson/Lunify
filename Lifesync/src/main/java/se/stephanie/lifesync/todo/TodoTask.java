@@ -1,13 +1,11 @@
 package se.stephanie.lifesync.todo;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+import se.stephanie.lifesync.user.User;
 
 import java.time.LocalDate;
 
@@ -34,4 +32,8 @@ public class TodoTask {
     private boolean archived;
 
     private boolean pinned;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
