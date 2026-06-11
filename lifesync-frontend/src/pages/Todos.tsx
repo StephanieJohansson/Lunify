@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { getPendingTodos } from "../services/TodoApi";
+import { getPendingTodos, completeTodo } from "../services/TodoApi";
 import type { TodoTask } from "../types/TodoTask";
 
 import type { Page } from "../App";
@@ -20,6 +20,16 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
             .catch(console.error);
     }, []);
 
+    function handleCompleteTodo(todo: TodoTask) {
+        completeTodo(todo.id, todo)
+            .then(() => {
+                setTodos((currentTodos) =>
+                    currentTodos.filter((currentTodo) => currentTodo.id !== todo.id)
+                );
+            })
+            .catch(console.error);
+    }
+
     return (
         <div className="flex min-h-screen bg-slate-900 text-white">
             <Sidebar activePage={activePage} onPageChange={onPageChange} />
@@ -37,15 +47,23 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
                             {todos.map((todo) => (
                                 <div
                                     key={todo.id}
-                                    className="rounded-xl bg-slate-900/60 p-4"
+                                    className="flex items-start gap-4 rounded-xl bg-slate-900/60 p-4"
                                 >
-                                    <h3 className="font-medium text-white">{todo.title}</h3>
+                                    <button
+                                        onClick={() => handleCompleteTodo(todo)}
+                                        className="mt-1 h-5 w-5 rounded-md border border-slate-500 hover:border-violet-400"
+                                        aria-label="Complete todo"
+                                    />
 
-                                    {todo.description && (
-                                        <p className="mt-1 text-sm text-slate-400">
-                                            {todo.description}
-                                        </p>
-                                    )}
+                                    <div>
+                                        <h3 className="font-medium text-white">{todo.title}</h3>
+
+                                        {todo.description && (
+                                            <p className="mt-1 text-sm text-slate-400">
+                                                {todo.description}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
                             ))}
                         </div>

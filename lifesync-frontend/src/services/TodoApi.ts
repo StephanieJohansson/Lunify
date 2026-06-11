@@ -31,3 +31,22 @@ export async function createTodo(
         throw new Error("Failed to create todo");
     }
 }
+
+export async function completeTodo(todoId: number, todo: TodoTask): Promise<TodoTask> {
+    const response = await fetch(`http://localhost:8080/api/todos/${todoId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            ...todo,
+            completed: true,
+        }),
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to complete todo");
+    }
+
+    return response.json();
+}
