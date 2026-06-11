@@ -12,24 +12,25 @@ export async function getPendingTodos(): Promise<TodoTask[]> {
 
 export async function createTodo(
     title: string,
-    description: string){
-    const response = await fetch(
-        "http://localhost:8080/api/todos",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                title,
-                description,
-            }),
-        }
-    );
+    description: string
+): Promise<TodoTask> {
+    const response = await fetch("http://localhost:8080/api/todos", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            title,
+            description,
+            completed: false,
+        }),
+    });
 
     if (!response.ok) {
         throw new Error("Failed to create todo");
     }
+
+    return response.json();
 }
 
 export async function completeTodo(todoId: number, todo: TodoTask): Promise<TodoTask> {
@@ -46,6 +47,16 @@ export async function completeTodo(todoId: number, todo: TodoTask): Promise<Todo
 
     if (!response.ok) {
         throw new Error("Failed to complete todo");
+    }
+
+    return response.json();
+}
+
+export async function getCompletedTodos(): Promise<TodoTask[]> {
+    const response = await fetch("http://localhost:8080/api/todos/completed");
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch completed todos");
     }
 
     return response.json();
