@@ -9,6 +9,7 @@ import {
     createTodo,
     deleteTodo,
     restoreTodo,
+    updateTodo,
 } from "../services/TodoApi";
 import type { TodoTask } from "../types/TodoTask";
 import type { Page } from "../App";
@@ -22,6 +23,7 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
     const [pendingTodos, setPendingTodos] = useState<TodoTask[]>([]);
     const [completedTodos, setCompletedTodos] = useState<TodoTask[]>([]);
     const [showCreateTodo, setShowCreateTodo] = useState(false);
+    const [todoToEdit, setTodoToEdit] = useState<TodoTask | null>(null);
 
     useEffect(() => {
         getPendingTodos().then(setPendingTodos).catch(console.error);
@@ -67,6 +69,30 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
             .catch(console.error);
     }
 
+    function handleUpdateTodo(title: string, description: string) {
+        if (!todoToEdit) {
+            return;
+        }
+
+        const updatedTodo: TodoTask = {
+            ...todoToEdit,
+            title,
+            description,
+        };
+
+        updateTodo(updatedTodo)
+            .then((savedTodo) => {
+                setPendingTodos((current) =>
+                    current.map((todo) =>
+                        todo.id === savedTodo.id ? savedTodo : todo
+                    )
+                );
+
+                setTodoToEdit(null);
+            })
+            .catch(console.error);
+    }
+
     return (
         <div className="flex min-h-screen bg-slate-900 text-white">
             <Sidebar activePage={activePage} onPageChange={onPageChange} />
@@ -94,22 +120,31 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
                                 {pendingTodos.map((todo) => (
                                     <div
                                         key={todo.id}
-                                        className="flex items-start gap-4 rounded-xl bg-slate-900/60 p-4"
+                                        className="flex items-start justify-between gap-4 rounded-xl bg-slate-900/60 p-4"
                                     >
-                                        <button
-                                            onClick={() => handleCompleteTodo(todo)}
-                                            className="mt-1 h-5 w-5 rounded-md border border-slate-500 hover:border-violet-400"
-                                        />
+                                        <div className="flex items-start gap-4">
+                                            <button
+                                                onClick={() => handleCompleteTodo(todo)}
+                                                className="mt-1 h-5 w-5 rounded-md border border-slate-500 hover:border-violet-400"
+                                            />
 
-                                        <div>
-                                            <h3 className="font-medium text-white">{todo.title}</h3>
+                                            <div>
+                                                <h3 className="font-medium text-white">{todo.title}</h3>
 
-                                            {todo.description && (
-                                                <p className="mt-1 text-sm text-slate-400">
-                                                    {todo.description}
-                                                </p>
-                                            )}
+                                                {todo.description && (
+                                                    <p className="mt-1 text-sm text-slate-400">
+                                                        {todo.description}
+                                                    </p>
+                                                )}
+                                            </div>
                                         </div>
+
+                                        <button
+                                            onClick={() => setTodoToEdit(todo)}
+                                            className="rounded-full bg-slate-700 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-600 hover:text-white"
+                                        >
+                                            Edit
+                                        </button>
                                     </div>
                                 ))}
                             </div>
@@ -166,6 +201,14 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
                 <CreateTodoModal
                     onClose={() => setShowCreateTodo(false)}
                     onSave={handleCreateTodo}
+                />
+            )}
+            {todoToEdit && (
+                <CreateTodoModal
+                    mode="edit"
+                    todo={todoToEdit}
+                    onClose={() => setTodoToEdit(null)}
+                    onSave={handleUpdateTodo}
                 />
             )}
         </div>
