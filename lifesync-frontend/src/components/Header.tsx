@@ -93,6 +93,7 @@ export default function Header() {
                         createTodo(title, description)
                             .then(() => {
                                 setShowCreateTodo(false);
+                                window.location.reload();
                             })
                             .catch(console.error);
                     }}

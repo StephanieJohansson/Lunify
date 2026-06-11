@@ -32,7 +32,7 @@ public class DashboardService {
     public DashboardSummary getSummary(Long userId) {
         return new DashboardSummary(
                 todoRepository.countByUserIdAndCompletedFalse(userId),
-                notificationRepository.findByUserIdAndReadFalse(userId).size(),
+                notificationRepository.countByUserIdAndReadFalse(userId),
                 paymentRepository.findByUserIdAndPaidFalse(userId).size(),
                 packageRepository.findByUserIdAndDeliveredFalse(userId).size(),
                 reminderRepository.countByUserIdAndReminderTimeAfterAndCompletedFalse(userId, now)

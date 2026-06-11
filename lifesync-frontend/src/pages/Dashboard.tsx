@@ -9,6 +9,8 @@ import UpcomingTasksWidget from "../components/widgets/UpcomingTasksWidget";
 import WeatherWidget from "../components/widgets/WeatherWidget";
 import TodayScheduleWidget from "../components/widgets/TodayScheduleWidget";
 import type { Page } from "../App";
+import { getPendingTodos} from "../services/TodoApi.ts";
+import type { TodoTask} from "../types/TodoTask.ts";
 
 type DashboardProps = {
     activePage: Page;
@@ -17,11 +19,16 @@ type DashboardProps = {
 
 export default function Dashboard({ activePage, onPageChange }: DashboardProps) {
     const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
+    const [upcomingTodos, setUpcomingTodos] = useState<TodoTask[]>([]);
 
     useEffect(() => {
         getDashboardSummary()
             .then((data) => setDashboard(data))
             .catch((error) => console.error(error));
+
+        getPendingTodos()
+            .then(setUpcomingTodos)
+            .catch(console.error);
     }, []);
 
     if (!dashboard) {
@@ -59,7 +66,7 @@ export default function Dashboard({ activePage, onPageChange }: DashboardProps) 
 
                 <section className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3">
                     <TodayScheduleWidget />
-                    <UpcomingTasksWidget />
+                    <UpcomingTasksWidget todos={upcomingTodos} />
                     <WeatherWidget />
                 </section>
             </main>
