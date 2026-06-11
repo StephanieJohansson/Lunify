@@ -4,6 +4,8 @@ package se.stephanie.lifesync.user;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -15,7 +17,12 @@ public class UserController {
     }
 
     /* GET */
-    @GetMapping("/{name}")
+    @GetMapping
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
+    @GetMapping("/name/{name}")
     public User getUserByName(@PathVariable String name) {
         return userService.getUserByName(name);
     }

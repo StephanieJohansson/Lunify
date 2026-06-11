@@ -3,6 +3,8 @@ package se.stephanie.lifesync.todo;
 
 import org.springframework.stereotype.Service;
 import se.stephanie.lifesync.common.exception.ResourceNotFoundException;
+import se.stephanie.lifesync.user.User;
+import se.stephanie.lifesync.user.UserRepository;
 
 import java.util.List;
 
@@ -10,9 +12,11 @@ import java.util.List;
 public class TodoTaskService {
 
     private final TodoTaskRepository todoTaskRepository;
+    private final UserRepository userRepository;
 
-    public TodoTaskService(TodoTaskRepository todoTaskRepository) {
+    public TodoTaskService(TodoTaskRepository todoTaskRepository, UserRepository userRepository) {
         this.todoTaskRepository = todoTaskRepository;
+        this.userRepository = userRepository;
     }
 
     /* GET */
@@ -46,6 +50,13 @@ public class TodoTaskService {
 
     /* POST */
     public TodoTask createTodoTask(TodoTask task) {
+        Long userId = 1L; // TODO: Replace with authenticated user from Spring Security
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        task.setUser(user);
+        task.setCompleted(false);
 
         return todoTaskRepository.save(task);
     }
