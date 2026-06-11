@@ -7,6 +7,8 @@ import {
     completeTodo,
     getCompletedTodos,
     createTodo,
+    deleteTodo,
+    restoreTodo,
 } from "../services/TodoApi";
 import type { TodoTask } from "../types/TodoTask";
 import type { Page } from "../App";
@@ -43,6 +45,24 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
             .then((newTodo) => {
                 setPendingTodos((current) => [newTodo, ...current]);
                 setShowCreateTodo(false);
+            })
+            .catch(console.error);
+    }
+
+    function handleClearCompletedTodos() {
+        Promise.all(completedTodos.map((todo) => deleteTodo(todo.id)))
+            .then(() => setCompletedTodos([]))
+            .catch(console.error);
+    }
+
+    function handleRestoreTodo(todo: TodoTask) {
+        restoreTodo(todo.id, todo)
+            .then((updatedTodo) => {
+                setCompletedTodos((current) =>
+                    current.filter((item) => item.id !== todo.id)
+                );
+
+                setPendingTodos((current) => [updatedTodo, ...current]);
             })
             .catch(console.error);
     }
@@ -97,8 +117,16 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
                     </section>
 
                     <section className="rounded-2xl bg-slate-800/80 p-5 shadow-lg">
-                        <h2 className="mb-4 text-xl font-semibold">Completed Todos</h2>
+                        <div className="mb-4 flex items-center justify-between">
+                            <h2 className="text-xl font-semibold">Completed Todos</h2>
 
+                            <button
+                                onClick={handleClearCompletedTodos}
+                                className="rounded-full bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:bg-slate-600 hover:text-white"
+                            >
+                                Clear history
+                            </button>
+                        </div>
                         {completedTodos.length === 0 ? (
                             <p className="text-slate-400">No completed todos yet.</p>
                         ) : (
@@ -106,17 +134,26 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
                                 {completedTodos.map((todo) => (
                                     <div
                                         key={todo.id}
-                                        className="rounded-xl bg-slate-900/40 p-4 opacity-70"
+                                        className="flex items-center justify-between rounded-xl bg-slate-900/40 p-4 opacity-80"
                                     >
-                                        <h3 className="font-medium text-white line-through">
-                                            {todo.title}
-                                        </h3>
+                                        <div>
+                                            <h3 className="font-medium text-white line-through">
+                                                {todo.title}
+                                            </h3>
 
-                                        {todo.description && (
-                                            <p className="mt-1 text-sm text-slate-400">
-                                                {todo.description}
-                                            </p>
-                                        )}
+                                            {todo.description && (
+                                                <p className="mt-1 text-sm text-slate-400">
+                                                    {todo.description}
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <button
+                                            onClick={() => handleRestoreTodo(todo)}
+                                            className="rounded-full bg-violet-500/20 px-4 py-2 text-sm font-semibold text-violet-300 transition hover:bg-violet-500/30 hover:text-violet-200"
+                                        >
+                                            Restore
+                                        </button>
                                     </div>
                                 ))}
                             </div>

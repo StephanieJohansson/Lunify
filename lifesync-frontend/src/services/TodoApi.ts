@@ -61,3 +61,32 @@ export async function getCompletedTodos(): Promise<TodoTask[]> {
 
     return response.json();
 }
+
+export async function deleteTodo(todoId: number): Promise<void> {
+    const response = await fetch(`http://localhost:8080/api/todos/${todoId}`, {
+        method: "DELETE",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to delete todo");
+    }
+}
+
+export async function restoreTodo(todoId: number, todo: TodoTask): Promise<TodoTask> {
+    const response = await fetch(`http://localhost:8080/api/todos/${todoId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            ...todo,
+            completed: false,
+        }),
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to restore todo");
+    }
+
+    return response.json();
+}
