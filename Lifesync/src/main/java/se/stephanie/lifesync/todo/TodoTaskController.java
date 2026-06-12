@@ -77,4 +77,9 @@ public class TodoTaskController {
     public void deleteTodoTask(@PathVariable Long id) {
         todoTaskService.deleteTodoTask(id);
     }
+
+    @DeleteMapping("/completed")
+    public void clearCompletedTodoTasks() {
+        todoTaskService.clearCompletedTodoTasks();
+    }
 }

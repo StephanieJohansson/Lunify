@@ -93,6 +93,14 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
             .catch(console.error);
     }
 
+    const handleDeleteTodo = async (id: number) => {
+        await deleteTodo(id);
+
+        setPendingTodos((current) =>
+            current.filter((todo) => todo.id !== id)
+        );
+    };
+
     return (
         <div className="flex min-h-screen bg-slate-900 text-white">
             <Sidebar activePage={activePage} onPageChange={onPageChange} />
@@ -139,12 +147,21 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
                                             </div>
                                         </div>
 
-                                        <button
-                                            onClick={() => setTodoToEdit(todo)}
-                                            className="rounded-full bg-slate-700 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-600 hover:text-white"
-                                        >
-                                            Edit
-                                        </button>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => setTodoToEdit(todo)}
+                                                className="rounded-full bg-slate-700 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-600 hover:text-white"
+                                            >
+                                                Edit
+                                            </button>
+
+                                            <button
+                                                onClick={() => handleDeleteTodo(todo.id)}
+                                                className="rounded-full bg-red-500/20 px-3 py-1 text-sm text-red-300 transition hover:bg-red-500/30 hover:text-red-200"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>

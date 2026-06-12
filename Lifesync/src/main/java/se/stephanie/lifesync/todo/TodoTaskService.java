@@ -83,4 +83,13 @@ public class TodoTaskService {
         todoTaskRepository.deleteById(id);
     }
 
+    public void clearCompletedTodoTasks() {
+        Long userId = 1L;
+
+        List<TodoTask> completedTodos =
+                todoTaskRepository.findByUserIdAndCompletedTrue(userId);
+
+        todoTaskRepository.deleteAll(completedTodos);
+    }
+
 }
