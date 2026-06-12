@@ -3,6 +3,7 @@ package se.stephanie.lifesync.todo;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import se.stephanie.lifesync.user.UserRepository;
 
 import java.util.List;
 
@@ -11,10 +12,14 @@ import java.util.List;
 public class TodoTaskController {
 
     private final TodoTaskService todoTaskService;
+    private final TodoTaskRepository todoTaskRepository;
+    private final UserRepository userRepository;
 
-    public TodoTaskController(TodoTaskService todoTaskService) {
+    public TodoTaskController(TodoTaskService todoTaskService, TodoTaskRepository todoTaskRepository, UserRepository userRepository) {
 
         this.todoTaskService = todoTaskService;
+        this.todoTaskRepository = todoTaskRepository;
+        this.userRepository = userRepository;
     }
 
     /* GET */
@@ -26,12 +31,14 @@ public class TodoTaskController {
 
     @GetMapping("/pending")
     public List<TodoTask> getPendingTodoTasks() {
-        return todoTaskService.getPendingTodoTask();
+        Long userId = 1L;
+        return todoTaskRepository.findByUserIdAndCompletedFalse(userId);
     }
 
     @GetMapping("/completed")
     public List<TodoTask> getCompletedTodoTasks() {
-        return todoTaskService.getCompletedTodoTask();
+        Long userId = 1L;
+        return todoTaskRepository.findByUserIdAndCompletedTrue(userId);
     }
 
     @GetMapping("/pending/count")
