@@ -106,3 +106,9 @@ export async function updateTodo(todo: TodoTask): Promise<TodoTask> {
 
     return response.json();
 }
+
+export async function clearCompletedTodos() {
+    await fetch("http://localhost:8080/api/todos/completed", {
+        method: "DELETE",
+    });
+}
