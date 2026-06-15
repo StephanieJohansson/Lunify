@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import se.stephanie.lifesync.user.User;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -23,7 +23,7 @@ public class TodoTask {
 
     private String description;
 
-    private LocalDate dueDate;
+    private LocalDateTime createdAt;
 
     private boolean completed;
 
@@ -36,4 +36,11 @@ public class TodoTask {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 }
