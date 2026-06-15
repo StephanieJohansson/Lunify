@@ -34,7 +34,7 @@ export default function Sidebar({ activePage, onPageChange }: SidebarProps) {
                 <span className="text-xl font-bold">Lunify</span>
             </div>
 
-            <nav className="mt-8 space-y-2">
+            <nav className="mt-8 space-y-1">
                 {menuItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = item.page === activePage;

@@ -2,18 +2,48 @@ package se.stephanie.lifesync.calendar;
 
 import org.springframework.stereotype.Service;
 import se.stephanie.lifesync.common.exception.ResourceNotFoundException;
+import se.stephanie.lifesync.user.User;
+import se.stephanie.lifesync.user.UserRepository;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class CalendarEventService {
 
     private final CalendarEventRepository calendarEventRepository;
+    private final UserRepository userRepository;
 
-    public CalendarEventService(CalendarEventRepository calendarEventRepository) {
+    public CalendarEventService(CalendarEventRepository calendarEventRepository, UserRepository userRepository) {
         this.calendarEventRepository = calendarEventRepository;
+        this.userRepository = userRepository;
     }
 
+    public List<CalendarEvent> getEventsForCurrentWeek() {
+        LocalDate today = LocalDate.now();
+
+        LocalDate monday = today.with(DayOfWeek.MONDAY);
+        LocalDate sunday = today.with(DayOfWeek.SUNDAY);
+
+        LocalDateTime startOfWeek = monday.atStartOfDay();
+        LocalDateTime endOfWeek = sunday.atTime(23, 59, 59);
+
+        return calendarEventRepository.findByStartDateTimeBetweenOrderByStartDateTimeAsc(
+                startOfWeek,
+                endOfWeek
+        );
+    }
+
+    public List<CalendarEvent> getEventsForToday() {
+        LocalDate today = LocalDate.now();
+
+        return calendarEventRepository.findByStartDateTimeBetweenOrderByStartDateTimeAsc(
+                today.atStartOfDay(),
+                today.atTime(23, 59, 59)
+        );
+    }
 
 
     /* GET */
@@ -30,13 +60,17 @@ public class CalendarEventService {
     /* POST */
 
     public CalendarEvent createEvent(CalendarEvent event) {
-        if (!event.isAllDay() && event.getStartDateTime().isAfter(event.getEndDateTime())) {
-            throw new IllegalArgumentException("Start date/time must be before end date/time for non-all-day events.");
-        }
+        Long defaultUserId = 1L;
+
+        User user = userRepository.findById(defaultUserId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Default user not found with id: " + defaultUserId
+                ));
+
+        event.setUser(user);
 
         return calendarEventRepository.save(event);
     }
-    
 
     /* UPDATE */
 

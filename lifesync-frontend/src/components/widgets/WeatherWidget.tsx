@@ -41,7 +41,18 @@ function getRainLabel(precipitation: number) {
     return "Heavy rain";
 }
 
-function formatLocationName(data: any) {
+type NominatimResponse = {
+    address?: {
+        village?: string;
+        town?: string;
+        city?: string;
+        municipality?: string;
+        county?: string;
+        country?: string;
+    };
+};
+
+function formatLocationName(data: NominatimResponse) {
     const address = data.address;
 
     const place =
@@ -112,7 +123,7 @@ export default function WeatherWidget() {
     }, []);
 
     return (
-        <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
+        <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg text-sm">
             <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-white">Weather</h2>
                 <CloudSun className="text-violet-300" size={22} />
