@@ -10,6 +10,7 @@ import {
     deleteTodo,
     restoreTodo,
     updateTodo,
+    clearCompletedTodos,
 } from "../services/TodoApi";
 import type { TodoTask } from "../types/TodoTask";
 import type { Page } from "../App";
@@ -52,7 +53,7 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
     }
 
     function handleClearCompletedTodos() {
-        Promise.all(completedTodos.map((todo) => deleteTodo(todo.id)))
+        clearCompletedTodos()
             .then(() => setCompletedTodos([]))
             .catch(console.error);
     }
