@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import se.stephanie.lifesync.user.User;
 
 import java.time.LocalDateTime;
 
@@ -37,4 +38,8 @@ public class CalendarEvent {
     private EventCategory category;
 
     private boolean recurring;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

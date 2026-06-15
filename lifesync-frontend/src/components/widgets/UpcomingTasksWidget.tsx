@@ -3,8 +3,6 @@ import type { TodoTask } from "../../types/TodoTask";
 type UpcomingTasksWidgetProps = {
     todos: TodoTask[];
     onComplete?: (todo: TodoTask) => void;
-    onEdit?: (todo: TodoTask) => void;
-    onDelete?: (id: number) => void;
 };
 
 function isCreatedThisWeek(createdAt?: string) {
@@ -26,8 +24,6 @@ function isCreatedThisWeek(createdAt?: string) {
 export default function UpcomingTasksWidget({
                                                 todos,
                                                 onComplete,
-                                                onEdit,
-                                                onDelete,
                                             }: UpcomingTasksWidgetProps) {
     const sortedTodos = [...todos].sort((a, b) => b.id - a.id);
 
@@ -42,7 +38,7 @@ export default function UpcomingTasksWidget({
     const renderTodo = (todo: TodoTask) => (
         <div
             key={todo.id}
-            className="rounded-xl bg-slate-900/60 p-3 transition hover:bg-slate-900/80"
+            className="rounded-xl bg-slate-900/60 p-1 transition hover:bg-slate-900/80"
         >
             <div className="flex items-start gap-3">
                 <button
@@ -59,33 +55,17 @@ export default function UpcomingTasksWidget({
                     </p>
 
                     {todo.description && (
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="mt-0.5 text-xs text-slate-500">
                             {todo.description}
                         </p>
                     )}
-
-                    <div className="mt-3 flex gap-2">
-                        <button
-                            onClick={() => onEdit?.(todo)}
-                            className="rounded-full bg-slate-700 px-3 py-1 text-xs text-slate-300 transition hover:bg-slate-600 hover:text-white"
-                        >
-                            Edit
-                        </button>
-
-                        <button
-                            onClick={() => onDelete?.(todo.id)}
-                            className="rounded-full bg-red-500/20 px-3 py-1 text-xs text-red-300 transition hover:bg-red-500/30 hover:text-red-200"
-                        >
-                            Delete
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
     );
 
     return (
-        <section className="rounded-2xl bg-slate-800/80 p-5 shadow-lg">
+        <section className="rounded-2xl bg-slate-800/80 p-3 shadow-lg">
             <h2 className="mb-4 text-lg font-semibold text-white">
                 Upcoming Tasks
             </h2>
@@ -104,7 +84,7 @@ export default function UpcomingTasksWidget({
                                 No todos added this week.
                             </p>
                         ) : (
-                            <div className="space-y-3">
+                            <div className="space-y-1">
                                 {thisWeekTodos.map(renderTodo)}
                             </div>
                         )}
@@ -116,7 +96,7 @@ export default function UpcomingTasksWidget({
                                 Unfinished todos from previous weeks
                             </h3>
 
-                            <div className="space-y-3">
+                            <div className="space-y-1">
                                 {unfinishedPreviousTodos.map(renderTodo)}
                             </div>
                         </div>

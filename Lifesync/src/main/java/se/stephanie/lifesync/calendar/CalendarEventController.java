@@ -33,6 +33,16 @@ public class CalendarEventController {
         return EventCategory.values();
     }
 
+    @GetMapping("/today")
+    public List<CalendarEvent> getTodayEvents() {
+        return service.getEventsForToday();
+    }
+
+    @GetMapping("/week")
+    public List<CalendarEvent> getWeekEvents() {
+        return service.getEventsForCurrentWeek();
+    }
+
     /* POST */
 
     @PostMapping

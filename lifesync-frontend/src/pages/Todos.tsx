@@ -125,7 +125,7 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
                         {pendingTodos.length === 0 ? (
                             <p className="text-slate-400">No pending todos yet.</p>
                         ) : (
-                            <div className="space-y-3">
+                            <div className="space-y-1">
                                 {pendingTodos.map((todo) => (
                                     <div
                                         key={todo.id}
@@ -183,7 +183,7 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
                         {completedTodos.length === 0 ? (
                             <p className="text-slate-400">No completed todos yet.</p>
                         ) : (
-                            <div className="space-y-3">
+                            <div className="space-y-1">
                                 {completedTodos.map((todo) => (
                                     <div
                                         key={todo.id}
