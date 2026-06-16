@@ -34,7 +34,7 @@ export default function Sidebar({
         { name: "Calendar", page: "calendar", icon: CalendarDays },
         { name: "Todos", page: "todos", icon: CheckSquare },
         { name: "Payments", page: null, icon: CreditCard },
-        { name: "Packages", page: null, icon: Package },
+        { name: "Packages", page: "packages", icon: Package },
         { name: "Reminders", page: null, icon: Bell },
     ] satisfies {
         name: string;

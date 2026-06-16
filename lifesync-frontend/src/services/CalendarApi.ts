@@ -1,5 +1,5 @@
 export type CalendarEvent = {
-    id: number;
+    id: number | string;
     title: string;
     startDateTime: string;
     endDateTime: string;
@@ -8,6 +8,11 @@ export type CalendarEvent = {
     location?: string;
     category: string;
     recurring: boolean;
+    source?: "CALENDAR" | "PACKAGE";
+    packageId?: number;
+    carrier?: string;
+    trackingNumber?: string;
+    packageStatus?: string;
     userId?: number;
     user?: {
         id: number;
