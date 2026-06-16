@@ -16,8 +16,12 @@ import {
     updateTodo,
 } from "../services/TodoApi";
 import type { TodoTask } from "../types/TodoTask";
-import {type CalendarEvent, getTodayEvents, getWeekEvents } from "../services/CalendarApi.ts";
+import { type CalendarEvent, getTodayEvents, getWeekEvents } from "../services/CalendarApi.ts";
 import WeekViewWidget from "../components/widgets/WeekViewWidget.tsx";
+import {
+    getUndeliveredPackages,
+    type PackageTracking,
+} from "../services/PackageApi.ts";
 
 type DashboardProps = {
     activePage: Page;
@@ -30,6 +34,7 @@ export default function Dashboard({ activePage, onPageChange }: DashboardProps) 
     const [todoToEdit, setTodoToEdit] = useState<TodoTask | null>(null);
     const [todayEvents, setTodayEvents] = useState<CalendarEvent[]>([]);
     const [weekEvents, setWeekEvents] = useState<CalendarEvent[]>([]);
+    const [activePackages, setActivePackages] = useState<PackageTracking[]>([]);
 
     useEffect(() => {
         getDashboardSummary()
@@ -46,6 +51,10 @@ export default function Dashboard({ activePage, onPageChange }: DashboardProps) 
 
         getWeekEvents()
             .then(setWeekEvents)
+            .catch(console.error);
+
+        getUndeliveredPackages()
+            .then(setActivePackages)
             .catch(console.error);
 
     }, []);
@@ -122,7 +131,12 @@ export default function Dashboard({ activePage, onPageChange }: DashboardProps) 
                     />
                     <DashboardCard title="Notifications" value={dashboard.unreadNotifications} icon={<Bell size={18} />} />
                     <DashboardCard title="Payments" value={dashboard.unpaidPayments} icon={<CreditCard size={18} />} />
-                    <DashboardCard title="Packages" value={dashboard.packagesInTransit} icon={<Package size={18} />} />
+                    <DashboardCard
+                        title="Packages"
+                        value={activePackages.length || dashboard.packagesInTransit}
+                        onClick={() => onPageChange("packages")}
+                        icon={<Package size={18} />}
+                    />
                     <DashboardCard title="Reminders" value={dashboard.upcomingReminders} icon={<Clock size={18} />} />
                 </section>
 
@@ -147,8 +161,44 @@ export default function Dashboard({ activePage, onPageChange }: DashboardProps) 
                     <WeatherWidget />
 
                     <div className="rounded-2xl bg-slate-800/80 p-5 shadow-lg">
-                        <h2 className="text-lg font-semibold text-white">Packages</h2>
-                        <p className="mt-4 text-sm text-slate-400">No packages in transit.</p>
+                        <div className="flex items-center justify-between gap-3">
+                            <h2 className="text-lg font-semibold text-white">Packages</h2>
+                            <button
+                                onClick={() => onPageChange("packages")}
+                                className="rounded-full bg-violet-500/20 px-3 py-1 text-xs font-semibold text-violet-200 transition hover:bg-violet-500/30"
+                            >
+                                Open
+                            </button>
+                        </div>
+
+                        {activePackages.length === 0 ? (
+                            <p className="mt-4 text-sm text-slate-400">
+                                No packages in transit.
+                            </p>
+                        ) : (
+                            <div className="mt-4 space-y-2">
+                                {activePackages.slice(0, 3).map((packageTracking) => (
+                                    <button
+                                        key={packageTracking.id}
+                                        onClick={() => onPageChange("packages")}
+                                        className="flex w-full items-center justify-between gap-3 rounded-xl bg-slate-900/50 px-3 py-2 text-left transition hover:bg-slate-700/60"
+                                    >
+                                        <span className="min-w-0">
+                                            <span className="block truncate text-sm font-semibold text-white">
+                                                {packageTracking.packageName}
+                                            </span>
+                                            <span className="block truncate text-xs text-slate-500">
+                                                {packageTracking.carrier}
+                                            </span>
+                                        </span>
+                                        <span className="shrink-0 text-xs text-sky-300">
+                                            {packageTracking.status?.replaceAll("_", " ") ??
+                                                "Tracking"}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <div className="rounded-2xl bg-slate-800/80 p-5 shadow-lg">

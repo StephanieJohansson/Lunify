@@ -9,4 +9,5 @@ public interface PackageTrackingRepository extends JpaRepository<PackageTracking
 
     List<PackageTracking> findByUserIdAndDeliveredFalse(Long userId);
 
+    List<PackageTracking> findByCarrierIgnoreCaseAndDeliveredFalse(String carrier);
 }

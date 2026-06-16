@@ -42,15 +42,26 @@ public class PackageTrackingController {
         return service.getUndeliveredPackageTrackings(userId);
     }
 
+    @GetMapping("/calendar")
+    public List<PackageCalendarEventResponse> getPackageCalendarEvents() {
+        Long userId = 1L; //TODO: replace with logged-in user from spring security
+        return service.getPackageCalendarEvents(userId);
+    }
+
         /* POST */
     @PostMapping
-    public PackageTracking createPackageTracking(@Valid @RequestBody PackageTracking packageTracking) {
-        return service.createPackageTracking(packageTracking);
+    public PackageTracking createPackageTracking(@Valid @RequestBody PackageTrackingRequest request) {
+        return service.createPackageTracking(request);
+    }
+
+    @PostMapping("/{id}/refresh")
+    public PackageTracking refreshPackageTracking(@PathVariable Long id) {
+        return service.refreshPackageTracking(id);
     }
 
         /* PUT */
     @PutMapping("/{id}")
-    public PackageTracking updatePackageTracking(@Valid @PathVariable Long id, PackageTracking packageTracking) {
+    public PackageTracking updatePackageTracking(@PathVariable Long id, @Valid @RequestBody PackageTracking packageTracking) {
         return service.updatePackageTracking(id, packageTracking);
     }
 

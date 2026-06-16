@@ -25,6 +25,7 @@ import {
     type EventCategory,
 } from "../services/CalendarApi";
 import { getDashboardSummary } from "../services/DashboardApi";
+import { getPackageCalendarEvents } from "../services/PackageApi";
 import type { DashboardSummary } from "../types/DashboardSummary";
 import type { CalendarView, Page } from "../App";
 
@@ -124,6 +125,12 @@ function eventToPayload(event: CalendarEvent): CalendarEventPayload {
     };
 }
 
+function isEditableCalendarEvent(
+    event: CalendarEvent
+): event is CalendarEvent & { id: number; source?: "CALENDAR" } {
+    return event.source !== "PACKAGE" && typeof event.id === "number";
+}
+
 function getEventsForDay(events: CalendarEvent[], date: Date) {
     return events
         .filter((event) => isSameDay(new Date(event.startDateTime), date))
@@ -176,13 +183,26 @@ function EventPill({
     className?: string;
 }) {
     const timeLabel = event.allDay ? "All day" : formatTime(event.startDateTime);
+    const isPackageEvent = event.source === "PACKAGE";
 
     return (
         <button
-            onClick={() => onEdit(event)}
-            className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-violet-400/25 bg-violet-500/20 px-2 py-1 text-left text-xs text-violet-50 shadow-sm shadow-slate-950/20 ring-1 ring-violet-300/5 transition duration-150 hover:-translate-y-0.5 hover:border-violet-200/60 hover:bg-violet-500/30 hover:shadow-lg hover:shadow-slate-950/40 hover:ring-violet-200/20 ${className}`}
+            onClick={() => {
+                if (!isPackageEvent) {
+                    onEdit(event);
+                }
+            }}
+            className={`flex w-full items-center justify-between gap-2 rounded-lg border px-2 py-1 text-left text-xs text-violet-50 shadow-sm shadow-slate-950/20 ring-1 transition duration-150 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-950/40 ${
+                isPackageEvent
+                    ? "cursor-default border-fuchsia-300/30 bg-fuchsia-500/20 ring-fuchsia-300/10 hover:bg-fuchsia-500/30"
+                    : "cursor-pointer border-violet-400/25 bg-violet-500/20 ring-violet-300/5 hover:border-violet-200/60 hover:bg-violet-500/30 hover:ring-violet-200/20"
+            } ${className}`}
         >
-            <span className="h-4 w-1 shrink-0 rounded-full bg-violet-300/70" />
+            <span
+                className={`h-4 w-1 shrink-0 rounded-full ${
+                    isPackageEvent ? "bg-fuchsia-200/80" : "bg-violet-300/70"
+                }`}
+            />
             <span className="min-w-0 truncate font-semibold">{event.title}</span>
             <span className="shrink-0 text-[11px] opacity-75">
                 {timeLabel}
@@ -193,9 +213,11 @@ function EventPill({
 
 function CalendarSummaryCards({
     dashboard,
+    onPackagesClick,
     onTodosClick,
 }: {
     dashboard: DashboardSummary | null;
+    onPackagesClick: () => void;
     onTodosClick: () => void;
 }) {
     const cards = [
@@ -214,6 +236,7 @@ function CalendarSummaryCards({
             title: "Packages",
             value: dashboard?.packagesInTransit ?? 0,
             icon: Package,
+            onClick: onPackagesClick,
         },
         {
             title: "Reminders",
@@ -499,7 +522,17 @@ export default function CalendarPage({
     const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
-        getAllEvents().then(setEvents).catch(console.error);
+        Promise.all([getAllEvents(), getPackageCalendarEvents()])
+            .then(([calendarEvents, packageEvents]) =>
+                setEvents([
+                    ...calendarEvents.map((event) => ({
+                        ...event,
+                        source: "CALENDAR" as const,
+                    })),
+                    ...packageEvents,
+                ])
+            )
+            .catch(console.error);
         getDashboardSummary().then(setDashboard).catch(console.error);
     }, []);
 
@@ -541,6 +574,10 @@ export default function CalendarPage({
     }
 
     function openEditModal(event: CalendarEvent) {
+        if (!isEditableCalendarEvent(event)) {
+            return;
+        }
+
         setEditingEvent(event);
         setForm(eventToPayload(event));
         setIsModalOpen(true);
@@ -552,15 +589,24 @@ export default function CalendarPage({
 
         try {
             if (editingEvent) {
+                if (!isEditableCalendarEvent(editingEvent)) {
+                    return;
+                }
+
                 const savedEvent = await updateEvent(editingEvent.id, form);
                 setEvents((current) =>
                     current.map((item) =>
-                        item.id === savedEvent.id ? savedEvent : item
+                        item.id === savedEvent.id
+                            ? { ...savedEvent, source: "CALENDAR" as const }
+                            : item
                     )
                 );
             } else {
                 const savedEvent = await createEvent(form);
-                setEvents((current) => [...current, savedEvent]);
+                setEvents((current) => [
+                    ...current,
+                    { ...savedEvent, source: "CALENDAR" as const },
+                ]);
             }
 
             setIsModalOpen(false);
@@ -573,7 +619,7 @@ export default function CalendarPage({
     }
 
     async function handleDelete() {
-        if (!editingEvent) {
+        if (!editingEvent || !isEditableCalendarEvent(editingEvent)) {
             return;
         }
 
@@ -641,6 +687,7 @@ export default function CalendarPage({
                     <div className="min-w-0 space-y-3">
                         <CalendarSummaryCards
                             dashboard={dashboard}
+                            onPackagesClick={() => onPageChange("packages")}
                             onTodosClick={() => onPageChange("todos")}
                         />
 

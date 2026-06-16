@@ -1,9 +1,10 @@
 import { useState } from "react";
 import CalendarPage from "./pages/CalendarPage";
 import Dashboard from "./pages/Dashboard";
+import Packages from "./pages/Packages";
 import Todos from "./pages/Todos";
 
-export type Page = "dashboard" | "calendar" | "todos";
+export type Page = "dashboard" | "calendar" | "todos" | "packages";
 export type CalendarView = "month" | "week" | "day" | "year";
 
 function App() {
@@ -23,6 +24,10 @@ function App() {
                 onPageChange={setPage}
             />
         );
+    }
+
+    if (page === "packages") {
+        return <Packages activePage={page} onPageChange={setPage} />;
     }
 
     return <Dashboard activePage={page} onPageChange={setPage} />;
