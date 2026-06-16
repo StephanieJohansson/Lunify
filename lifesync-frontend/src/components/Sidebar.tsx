@@ -1,13 +1,13 @@
 import {
     Home,
-    Calendar,
+    CalendarDays,
     CheckSquare,
     CreditCard,
     Package,
     Bell,
 } from "lucide-react";
 
-type Page = "dashboard" | "todos";
+import type { Page } from "../App";
 
 type SidebarProps = {
     activePage: Page;
@@ -17,12 +17,16 @@ type SidebarProps = {
 export default function Sidebar({ activePage, onPageChange }: SidebarProps) {
     const menuItems = [
         { name: "Home", page: "dashboard", icon: Home },
-        { name: "Calendar", page: null, icon: Calendar },
+        { name: "Calendar", page: "calendar", icon: CalendarDays },
         { name: "Todos", page: "todos", icon: CheckSquare },
         { name: "Payments", page: null, icon: CreditCard },
         { name: "Packages", page: null, icon: Package },
         { name: "Reminders", page: null, icon: Bell },
-    ] as const;
+    ] satisfies {
+        name: string;
+        page: Page | null;
+        icon: typeof Home;
+    }[];
 
     return (
         <aside className="hidden min-h-screen w-64 flex-col bg-slate-950 p-6 text-white md:flex">
