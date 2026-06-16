@@ -7,14 +7,28 @@ import {
     Bell,
 } from "lucide-react";
 
-import type { Page } from "../App";
+import type { CalendarView, Page } from "../App";
 
 type SidebarProps = {
     activePage: Page;
+    activeCalendarView?: CalendarView;
+    onCalendarViewChange?: (view: CalendarView) => void;
     onPageChange: (page: Page) => void;
 };
 
-export default function Sidebar({ activePage, onPageChange }: SidebarProps) {
+const calendarViews = [
+    { label: "Month", view: "month" },
+    { label: "Week", view: "week" },
+    { label: "Day", view: "day" },
+    { label: "Year", view: "year" },
+] satisfies { label: string; view: CalendarView }[];
+
+export default function Sidebar({
+    activePage,
+    activeCalendarView = "month",
+    onCalendarViewChange,
+    onPageChange,
+}: SidebarProps) {
     const menuItems = [
         { name: "Home", page: "dashboard", icon: Home },
         { name: "Calendar", page: "calendar", icon: CalendarDays },
@@ -44,15 +58,15 @@ export default function Sidebar({ activePage, onPageChange }: SidebarProps) {
                     const isActive = item.page === activePage;
 
                     return (
-                        <button
-                            key={item.name}
-                            disabled={!item.page}
-                            onClick={() => {
-                                if (item.page) {
-                                    onPageChange(item.page);
-                                }
-                            }}
-                            className={`
+                        <div key={item.name}>
+                            <button
+                                disabled={!item.page}
+                                onClick={() => {
+                                    if (item.page) {
+                                        onPageChange(item.page);
+                                    }
+                                }}
+                                className={`
                 flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm
                 transition
                 ${
@@ -62,10 +76,36 @@ export default function Sidebar({ activePage, onPageChange }: SidebarProps) {
                             }
                 ${!item.page ? "cursor-not-allowed opacity-60" : ""}
               `}
-                        >
-                            <Icon size={18} />
-                            <span>{item.name}</span>
-                        </button>
+                            >
+                                <Icon size={18} />
+                                <span>{item.name}</span>
+                            </button>
+
+                            {item.page === "calendar" &&
+                                activePage === "calendar" && (
+                                    <div className="mt-1 space-y-1 pl-10">
+                                        {calendarViews.map((calendarItem) => (
+                                            <button
+                                                key={calendarItem.view}
+                                                onClick={() => {
+                                                    onPageChange("calendar");
+                                                    onCalendarViewChange?.(
+                                                        calendarItem.view
+                                                    );
+                                                }}
+                                                className={`w-full rounded-lg px-3 py-2 text-left text-xs font-medium transition ${
+                                                    activeCalendarView ===
+                                                    calendarItem.view
+                                                        ? "bg-violet-500/15 text-violet-100"
+                                                        : "text-slate-500 hover:bg-slate-900 hover:text-slate-300"
+                                                }`}
+                                            >
+                                                {calendarItem.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                        </div>
                     );
                 })}
             </nav>

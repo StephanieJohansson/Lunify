@@ -3,8 +3,11 @@ import {
     CalendarPlus,
     ChevronLeft,
     ChevronRight,
+    CheckSquare,
     Clock,
+    CreditCard,
     MapPin,
+    Package,
     Pencil,
     RotateCcw,
     Trash2,
@@ -21,20 +24,22 @@ import {
     type CalendarEventPayload,
     type EventCategory,
 } from "../services/CalendarApi";
-import type { Page } from "../App";
+import { getDashboardSummary } from "../services/DashboardApi";
+import type { DashboardSummary } from "../types/DashboardSummary";
+import type { CalendarView, Page } from "../App";
 
 type CalendarPageProps = {
     activePage: Page;
+    activeCalendarView: CalendarView;
+    onCalendarViewChange: (view: CalendarView) => void;
     onPageChange: (page: Page) => void;
 };
 
-type ViewMode = "month" | "week" | "day";
-
 const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const calendarHours = Array.from({ length: 15 }, (_, index) => index + 7);
+const calendarHours = Array.from({ length: 18 }, (_, index) => index + 6);
 const calendarGridColumns = "4.5rem repeat(7, minmax(7rem, 1fr))";
 const dayGridColumns = "4.5rem minmax(0, 1fr)";
-const calendarShellColumns = "minmax(0, 1fr) 18rem";
+const calendarPageColumns = "minmax(0, 1fr) 18rem";
 const calendarLine = "1px solid rgba(148, 163, 184, 0.18)";
 const calendarStrongLine = "1px solid rgba(148, 163, 184, 0.28)";
 
@@ -186,6 +191,206 @@ function EventPill({
     );
 }
 
+function CalendarSummaryCards({
+    dashboard,
+    onTodosClick,
+}: {
+    dashboard: DashboardSummary | null;
+    onTodosClick: () => void;
+}) {
+    const cards = [
+        {
+            title: "Todos",
+            value: dashboard?.pendingTodos ?? 0,
+            icon: CheckSquare,
+            onClick: onTodosClick,
+        },
+        {
+            title: "Payments",
+            value: dashboard?.unpaidPayments ?? 0,
+            icon: CreditCard,
+        },
+        {
+            title: "Packages",
+            value: dashboard?.packagesInTransit ?? 0,
+            icon: Package,
+        },
+        {
+            title: "Reminders",
+            value: dashboard?.upcomingReminders ?? 0,
+            icon: Clock,
+        },
+    ];
+
+    return (
+        <section className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+            {cards.map((card) => {
+                const Icon = card.icon;
+
+                return (
+                    <button
+                        key={card.title}
+                        onClick={card.onClick}
+                        className="rounded-2xl bg-slate-800/80 p-3 text-left shadow-lg transition hover:bg-slate-700/80"
+                    >
+                        <div className="flex items-center justify-between">
+                            <p className="text-xs text-slate-400">{card.title}</p>
+                            <div className="rounded-lg bg-violet-500/20 p-1.5 text-violet-300">
+                                <Icon size={16} />
+                            </div>
+                        </div>
+                        <p className="mt-1 text-xl font-bold text-white">
+                            {card.value}
+                        </p>
+                    </button>
+                );
+            })}
+        </section>
+    );
+}
+
+function MiniMonthWidget({
+    currentDate,
+    events,
+    onSelectDate,
+}: {
+    currentDate: Date;
+    events: CalendarEvent[];
+    onSelectDate: (date: Date) => void;
+}) {
+    const miniMonthDays = buildMonthDays(currentDate);
+
+    return (
+        <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
+            <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-base font-semibold text-white">
+                    {currentDate.toLocaleDateString("en-US", {
+                        month: "long",
+                        year: "numeric",
+                    })}
+                </h3>
+                <span className="rounded-full bg-violet-500/20 px-2 py-1 text-xs font-semibold text-violet-200">
+                    {events.length}
+                </span>
+            </div>
+
+            <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold uppercase text-slate-500">
+                {weekDays.map((day) => (
+                    <span key={day}>{day.slice(0, 1)}</span>
+                ))}
+            </div>
+
+            <div className="mt-2 grid grid-cols-7 gap-1">
+                {miniMonthDays.map((date) => {
+                    const isCurrentMonth =
+                        date.getMonth() === currentDate.getMonth();
+                    const isSelected = isSameDay(date, currentDate);
+                    const hasEvents = getEventsForDay(events, date).length > 0;
+
+                    return (
+                        <button
+                            key={date.toISOString()}
+                            onClick={() => onSelectDate(date)}
+                            className={`relative flex h-7 items-center justify-center rounded-lg text-xs transition hover:bg-slate-700 ${
+                                isSelected
+                                    ? "bg-violet-600 text-white"
+                                    : isCurrentMonth
+                                      ? "text-slate-300"
+                                      : "text-slate-600"
+                            }`}
+                        >
+                            {date.getDate()}
+                            {hasEvents && (
+                                <span className="absolute bottom-1 h-1 w-1 rounded-full bg-violet-300" />
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
+        </section>
+    );
+}
+
+function CalendarViewHeader({
+    title,
+    viewMode,
+    onViewChange,
+    onPrevious,
+    onToday,
+    onNext,
+    onCreate,
+}: {
+    title: string;
+    viewMode: CalendarView;
+    onViewChange: (view: CalendarView) => void;
+    onPrevious: () => void;
+    onToday: () => void;
+    onNext: () => void;
+    onCreate: () => void;
+}) {
+    return (
+        <div className="mb-3 flex flex-col gap-3 border-b border-slate-700/50 pb-3 xl:flex-row xl:items-center xl:justify-between">
+            <div>
+                <p className="text-xs text-slate-400">Calendar</p>
+                <h2 className="text-lg font-semibold capitalize text-white">
+                    {title}
+                </h2>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1.5">
+                <div className="flex rounded-xl bg-slate-900/60 p-1">
+                    {(["month", "week", "day", "year"] as CalendarView[]).map(
+                        (mode) => (
+                            <button
+                                key={mode}
+                                onClick={() => onViewChange(mode)}
+                                className={`rounded-lg px-3 py-1 text-sm font-medium capitalize transition ${
+                                    viewMode === mode
+                                        ? "bg-violet-600 text-white"
+                                        : "text-slate-400 hover:text-white"
+                                }`}
+                            >
+                                {mode}
+                            </button>
+                        )
+                    )}
+                </div>
+
+                <button
+                    onClick={onPrevious}
+                    className="rounded-xl bg-slate-900/60 p-2 text-slate-300 transition hover:text-white"
+                    aria-label="Previous period"
+                >
+                    <ChevronLeft size={18} />
+                </button>
+
+                <button
+                    onClick={onToday}
+                    className="rounded-xl bg-slate-900/60 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:text-white"
+                >
+                    Today
+                </button>
+
+                <button
+                    onClick={onNext}
+                    className="rounded-xl bg-slate-900/60 p-2 text-slate-300 transition hover:text-white"
+                    aria-label="Next period"
+                >
+                    <ChevronRight size={18} />
+                </button>
+
+                <button
+                    onClick={onCreate}
+                    className="flex items-center gap-2 rounded-xl bg-violet-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-500"
+                >
+                    <CalendarPlus size={17} />
+                    New event
+                </button>
+            </div>
+        </div>
+    );
+}
+
 function CalendarSidePanel({
     currentDate,
     events,
@@ -257,7 +462,7 @@ function CalendarSidePanel({
                                 </p>
                                 <p className="mt-1 text-xs text-slate-500">
                                     {new Date(event.startDateTime).toLocaleDateString(
-                                        "sv-SE",
+                                        "en-US",
                                         {
                                             weekday: "short",
                                             day: "numeric",
@@ -281,10 +486,12 @@ function CalendarSidePanel({
 
 export default function CalendarPage({
     activePage,
+    activeCalendarView,
+    onCalendarViewChange,
     onPageChange,
 }: CalendarPageProps) {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
-    const [viewMode, setViewMode] = useState<ViewMode>("month");
+    const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [form, setForm] = useState<CalendarEventPayload>(defaultForm);
     const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
@@ -293,6 +500,7 @@ export default function CalendarPage({
 
     useEffect(() => {
         getAllEvents().then(setEvents).catch(console.error);
+        getDashboardSummary().then(setDashboard).catch(console.error);
     }, []);
 
     const monthDays = useMemo(() => buildMonthDays(currentDate), [currentDate]);
@@ -306,6 +514,24 @@ export default function CalendarPage({
             }),
         [weekStart]
     );
+    const yearMonths = useMemo(
+        () =>
+            Array.from({ length: 12 }, (_, index) => {
+                const date = new Date(currentDate.getFullYear(), index, 1);
+                return {
+                    date,
+                    events: events.filter(
+                        (event) =>
+                            new Date(event.startDateTime).getFullYear() ===
+                                date.getFullYear() &&
+                            new Date(event.startDateTime).getMonth() ===
+                                date.getMonth()
+                    ),
+                };
+            }),
+        [currentDate, events]
+    );
+    const viewMode = activeCalendarView;
     function openCreateModal(date = currentDate) {
         const start = toDateTimeInputValue(date, 9);
         const end = toDateTimeInputValue(date, 10);
@@ -367,6 +593,8 @@ export default function CalendarPage({
                 nextDate.setMonth(date.getMonth() + direction);
             } else if (viewMode === "week") {
                 nextDate.setDate(date.getDate() + direction * 7);
+            } else if (viewMode === "year") {
+                nextDate.setFullYear(date.getFullYear() + direction);
             } else {
                 nextDate.setDate(date.getDate() + direction);
             }
@@ -375,87 +603,60 @@ export default function CalendarPage({
         });
     }
 
-    const heading = currentDate.toLocaleDateString("sv-SE", {
+    const heading = currentDate.toLocaleDateString("en-US", {
         month: "long",
         year: "numeric",
     });
 
+    const calendarHeading =
+        viewMode === "day"
+            ? currentDate.toLocaleDateString("en-US", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+              })
+            : viewMode === "year"
+              ? currentDate.getFullYear().toString()
+              : heading;
+
     return (
         <div className="flex min-h-screen bg-slate-900 text-white">
-            <Sidebar activePage={activePage} onPageChange={onPageChange} />
+            <Sidebar
+                activePage={activePage}
+                activeCalendarView={activeCalendarView}
+                onCalendarViewChange={onCalendarViewChange}
+                onPageChange={onPageChange}
+            />
 
             <main className="flex-1 p-4">
                 <Header />
 
-                <section className="mb-2.5 flex flex-col gap-2 rounded-2xl bg-slate-800/80 px-3 py-2.5 shadow-lg xl:flex-row xl:items-center xl:justify-between">
-                    <div>
-                        <p className="text-xs text-slate-400">Calendar</p>
-                        <h2 className="text-lg font-semibold capitalize text-white">
-                            {viewMode === "day"
-                                ? currentDate.toLocaleDateString("sv-SE", {
-                                      weekday: "long",
-                                      day: "numeric",
-                                      month: "long",
-                                  })
-                                : heading}
-                        </h2>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-1.5">
-                        <div className="flex rounded-xl bg-slate-900/60 p-1">
-                            {(["month", "week", "day"] as ViewMode[]).map(
-                                (mode) => (
-                                    <button
-                                        key={mode}
-                                        onClick={() => setViewMode(mode)}
-                                        className={`rounded-lg px-3 py-1 text-sm font-medium capitalize transition ${
-                                            viewMode === mode
-                                                ? "bg-violet-600 text-white"
-                                                : "text-slate-400 hover:text-white"
-                                        }`}
-                                    >
-                                        {mode}
-                                    </button>
-                                )
-                            )}
-                        </div>
-
-                        <button
-                            onClick={() => movePeriod(-1)}
-                            className="rounded-xl bg-slate-900/60 p-2 text-slate-300 transition hover:text-white"
-                            aria-label="Previous period"
-                        >
-                            <ChevronLeft size={18} />
-                        </button>
-
-                        <button
-                            onClick={() => setCurrentDate(new Date())}
-                            className="rounded-xl bg-slate-900/60 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:text-white"
-                        >
-                            Today
-                        </button>
-
-                        <button
-                            onClick={() => movePeriod(1)}
-                            className="rounded-xl bg-slate-900/60 p-2 text-slate-300 transition hover:text-white"
-                            aria-label="Next period"
-                        >
-                            <ChevronRight size={18} />
-                        </button>
-
-                        <button
-                            onClick={() => openCreateModal()}
-                            className="flex items-center gap-2 rounded-xl bg-violet-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-500"
-                        >
-                            <CalendarPlus size={17} />
-                            New event
-                        </button>
-                    </div>
-                </section>
+                <section
+                    className="grid gap-4"
+                    style={{
+                        gridTemplateColumns: calendarPageColumns,
+                        alignItems: "start",
+                    }}
+                >
+                    <div className="min-w-0 space-y-3">
+                        <CalendarSummaryCards
+                            dashboard={dashboard}
+                            onTodosClick={() => onPageChange("todos")}
+                        />
 
                 {viewMode === "month" && (
-                    <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
-                        <div className="grid grid-cols-7 gap-2 pb-2">
+                    <section className="rounded-2xl bg-slate-800/80 p-3 shadow-lg">
+                        <CalendarViewHeader
+                            title={calendarHeading}
+                            viewMode={viewMode}
+                            onViewChange={onCalendarViewChange}
+                            onPrevious={() => movePeriod(-1)}
+                            onToday={() => setCurrentDate(new Date())}
+                            onNext={() => movePeriod(1)}
+                            onCreate={() => openCreateModal()}
+                        />
+
+                        <div className="grid grid-cols-7 gap-1.5 pb-1.5">
                             {weekDays.map((day) => (
                                 <div
                                     key={day}
@@ -466,7 +667,7 @@ export default function CalendarPage({
                             ))}
                         </div>
 
-                        <div className="grid grid-cols-7 gap-2">
+                        <div className="grid grid-cols-7 gap-1.5">
                             {monthDays.map((date) => {
                                 const dayEvents = getEventsForDay(events, date);
                                 const isCurrentMonth =
@@ -483,15 +684,15 @@ export default function CalendarPage({
                                         onKeyDown={(event) => {
                                             if (event.key === "Enter") {
                                                 setCurrentDate(date);
-                                                setViewMode("day");
+                                                onCalendarViewChange("day");
                                             }
                                         }}
-                                        className={`min-h-32 rounded-xl bg-slate-900/40 p-2 text-left transition hover:bg-slate-900/70 ${
+                                        className={`min-h-20 rounded-xl bg-slate-900/40 p-2 text-left transition hover:bg-slate-900/70 ${
                                             !isCurrentMonth ? "opacity-45" : ""
                                         }`}
                                     >
                                         <span
-                                            className={`mb-2 flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold ${
+                                            className={`mb-1.5 flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
                                                 isToday
                                                     ? "bg-violet-600 text-white"
                                                     : "text-slate-300"
@@ -501,7 +702,7 @@ export default function CalendarPage({
                                         </span>
 
                                         <div className="space-y-1">
-                                            {dayEvents.slice(0, 3).map((event) => (
+                                            {dayEvents.slice(0, 2).map((event) => (
                                                 <EventPill
                                                     key={event.id}
                                                     event={event}
@@ -509,9 +710,9 @@ export default function CalendarPage({
                                                 />
                                             ))}
 
-                                            {dayEvents.length > 3 && (
+                                            {dayEvents.length > 2 && (
                                                 <p className="text-xs text-slate-500">
-                                                    +{dayEvents.length - 3} more
+                                                    +{dayEvents.length - 2} more
                                                 </p>
                                             )}
                                         </div>
@@ -523,16 +724,21 @@ export default function CalendarPage({
                 )}
 
                 {viewMode === "week" && (
-                    <section
-                        className="gap-4"
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: calendarShellColumns,
-                            alignItems: "start",
-                        }}
-                    >
+                    <section>
                         <div className="min-w-0 overflow-x-auto rounded-2xl bg-slate-800/80 shadow-lg">
                             <div className="min-w-[56rem]">
+                                <div className="p-3 pb-0">
+                                    <CalendarViewHeader
+                                        title={calendarHeading}
+                                        viewMode={viewMode}
+                                        onViewChange={onCalendarViewChange}
+                                        onPrevious={() => movePeriod(-1)}
+                                        onToday={() => setCurrentDate(new Date())}
+                                        onNext={() => movePeriod(1)}
+                                        onCreate={() => openCreateModal()}
+                                    />
+                                </div>
+
                                 <div
                                     className="grid bg-slate-900/25"
                                     style={{
@@ -555,7 +761,7 @@ export default function CalendarPage({
                                                 key={date.toISOString()}
                                                 onClick={() => {
                                                     setCurrentDate(date);
-                                                    setViewMode("day");
+                                                    onCalendarViewChange("day");
                                                 }}
                                                 className="p-3 text-left transition hover:bg-slate-700/50"
                                                 style={{
@@ -586,7 +792,7 @@ export default function CalendarPage({
                                     {calendarHours.map((hour) => (
                                         <div
                                             key={hour}
-                                            className="grid min-h-8"
+                                            className="grid min-h-7"
                                             style={{
                                                 gridTemplateColumns: calendarGridColumns,
                                                 borderBottom:
@@ -599,7 +805,7 @@ export default function CalendarPage({
                                             }}
                                         >
                                             <div
-                                                className="px-3 py-1.5 text-sm text-slate-500"
+                                                className="px-3 py-1 text-xs text-slate-500"
                                                 style={{ borderRight: calendarStrongLine }}
                                             >
                                                 {String(hour).padStart(2, "0")}:00
@@ -615,7 +821,7 @@ export default function CalendarPage({
                                                 return (
                                                     <div
                                                         key={`${date.toISOString()}-${hour}`}
-                                                        className="p-2 transition hover:bg-slate-900/25"
+                                                        className="p-1.5 transition hover:bg-slate-900/25"
                                                         style={{
                                                             borderRight:
                                                                 dayIndex ===
@@ -643,31 +849,124 @@ export default function CalendarPage({
                             </div>
                         </div>
 
-                        <CalendarSidePanel
-                            currentDate={currentDate}
-                            events={events}
-                            onCreate={() => openCreateModal(currentDate)}
-                            onEdit={openEditModal}
+                    </section>
+                )}
+
+                {viewMode === "year" && (
+                    <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
+                        <CalendarViewHeader
+                            title={calendarHeading}
+                            viewMode={viewMode}
+                            onViewChange={onCalendarViewChange}
+                            onPrevious={() => movePeriod(-1)}
+                            onToday={() => setCurrentDate(new Date())}
+                            onNext={() => movePeriod(1)}
+                            onCreate={() => openCreateModal()}
                         />
+
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                        {yearMonths.map((month) => {
+                            const isCurrentMonth =
+                                month.date.getMonth() === new Date().getMonth() &&
+                                month.date.getFullYear() ===
+                                    new Date().getFullYear();
+
+                            return (
+                                <div
+                                    key={month.date.toISOString()}
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() => {
+                                        setCurrentDate(month.date);
+                                        onCalendarViewChange("month");
+                                    }}
+                                    onKeyDown={(event) => {
+                                        if (event.key === "Enter") {
+                                            setCurrentDate(month.date);
+                                            onCalendarViewChange("month");
+                                        }
+                                    }}
+                                    className="min-h-32 rounded-xl bg-slate-900/40 p-4 text-left transition hover:bg-slate-900/70 hover:ring-1 hover:ring-violet-300/20"
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-sm font-semibold capitalize text-white">
+                                            {month.date.toLocaleDateString("en-US", {
+                                                month: "long",
+                                            })}
+                                        </h3>
+
+                                        <span
+                                            className={`flex h-7 min-w-7 items-center justify-center rounded-full px-2 text-xs font-semibold ${
+                                                isCurrentMonth
+                                                    ? "bg-violet-600 text-white"
+                                                    : "bg-violet-500/20 text-violet-200"
+                                            }`}
+                                        >
+                                            {month.events.length}
+                                        </span>
+                                    </div>
+
+                                    <div className="mt-4 space-y-1.5">
+                                        {month.events.length === 0 ? (
+                                            <p className="text-xs text-slate-600">
+                                                No events
+                                            </p>
+                                        ) : (
+                                            month.events.slice(0, 2).map((event) => (
+                                                <button
+                                                    key={event.id}
+                                                    onClick={(eventClick) => {
+                                                        eventClick.stopPropagation();
+                                                        openEditModal(event);
+                                                    }}
+                                                    className="flex w-full items-center justify-between gap-2 rounded-lg bg-violet-500/15 px-2 py-1 text-left text-xs text-violet-100 transition hover:bg-violet-500/25"
+                                                >
+                                                    <span className="min-w-0 truncate font-semibold">
+                                                        {event.title}
+                                                    </span>
+                                                    <span className="shrink-0 text-[11px] text-violet-200/80">
+                                                        {formatTime(
+                                                            event.startDateTime
+                                                        )}
+                                                    </span>
+                                                </button>
+                                            ))
+                                        )}
+
+                                        {month.events.length > 2 && (
+                                            <p className="text-xs font-medium text-slate-500">
+                                                +{month.events.length - 2} more events
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        </div>
                     </section>
                 )}
 
                 {viewMode === "day" && (
-                    <section
-                        className="gap-4"
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: calendarShellColumns,
-                            alignItems: "start",
-                        }}
-                    >
+                    <section>
                         <div className="min-w-0 overflow-hidden rounded-2xl bg-slate-800/80 shadow-lg">
+                            <div className="p-3 pb-0">
+                                <CalendarViewHeader
+                                    title={calendarHeading}
+                                    viewMode={viewMode}
+                                    onViewChange={onCalendarViewChange}
+                                    onPrevious={() => movePeriod(-1)}
+                                    onToday={() => setCurrentDate(new Date())}
+                                    onNext={() => movePeriod(1)}
+                                    onCreate={() => openCreateModal()}
+                                />
+                            </div>
+
                             <div
                                 className="bg-slate-900/25 px-5 py-2.5"
                                 style={{ borderBottom: calendarStrongLine }}
                             >
                                 <p className="text-sm font-semibold capitalize text-slate-300">
-                                    {currentDate.toLocaleDateString("sv-SE", {
+                                    {currentDate.toLocaleDateString("en-US", {
                                         weekday: "long",
                                         day: "numeric",
                                         month: "long",
@@ -685,7 +984,7 @@ export default function CalendarPage({
                                 return (
                                     <div
                                         key={hour}
-                                        className="grid min-h-8"
+                                        className="grid min-h-7"
                                         style={{
                                             gridTemplateColumns: dayGridColumns,
                                             borderBottom:
@@ -698,13 +997,13 @@ export default function CalendarPage({
                                         }}
                                     >
                                         <div
-                                            className="px-3 py-1.5 text-sm text-slate-500"
+                                            className="px-3 py-1 text-xs text-slate-500"
                                             style={{ borderRight: calendarStrongLine }}
                                         >
                                             {String(hour).padStart(2, "0")}:00
                                         </div>
 
-                                        <div className="bg-slate-900/10 p-2 transition hover:bg-slate-900/25">
+                                        <div className="bg-slate-900/10 p-1.5 transition hover:bg-slate-900/25">
                                             <div className="space-y-2">
                                                 {eventsAtHour.map((event) => (
                                                     <EventPill
@@ -721,14 +1020,27 @@ export default function CalendarPage({
                             })}
                         </div>
 
+                    </section>
+                )}
+                    </div>
+
+                    <aside className="space-y-4">
+                        <MiniMonthWidget
+                            currentDate={currentDate}
+                            events={events}
+                            onSelectDate={(date) => {
+                                setCurrentDate(date);
+                                onCalendarViewChange("day");
+                            }}
+                        />
                         <CalendarSidePanel
                             currentDate={currentDate}
                             events={events}
                             onCreate={() => openCreateModal(currentDate)}
                             onEdit={openEditModal}
                         />
-                    </section>
-                )}
+                    </aside>
+                </section>
             </main>
 
             {isModalOpen && (
