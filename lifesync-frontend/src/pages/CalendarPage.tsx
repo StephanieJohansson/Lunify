@@ -231,7 +231,7 @@ function CalendarSummaryCards({
                     <button
                         key={card.title}
                         onClick={card.onClick}
-                        className="rounded-2xl bg-slate-800/80 p-3 text-left shadow-lg transition hover:bg-slate-700/80"
+                        className="rounded-2xl bg-slate-800/80 px-3 py-2.5 text-left shadow-lg transition hover:bg-slate-700/80"
                     >
                         <div className="flex items-center justify-between">
                             <p className="text-xs text-slate-400">{card.title}</p>
@@ -239,7 +239,7 @@ function CalendarSummaryCards({
                                 <Icon size={16} />
                             </div>
                         </div>
-                        <p className="mt-1 text-xl font-bold text-white">
+                        <p className="mt-0.5 text-xl font-bold text-white">
                             {card.value}
                         </p>
                     </button>
@@ -261,8 +261,8 @@ function MiniMonthWidget({
     const miniMonthDays = buildMonthDays(currentDate);
 
     return (
-        <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
-            <div className="mb-3 flex items-center justify-between">
+        <section className="rounded-2xl bg-slate-800/80 p-3.5 shadow-lg">
+            <div className="mb-2.5 flex items-center justify-between">
                 <h3 className="text-base font-semibold text-white">
                     {currentDate.toLocaleDateString("en-US", {
                         month: "long",
@@ -280,7 +280,7 @@ function MiniMonthWidget({
                 ))}
             </div>
 
-            <div className="mt-2 grid grid-cols-7 gap-1">
+            <div className="mt-1.5 grid grid-cols-7 gap-1">
                 {miniMonthDays.map((date) => {
                     const isCurrentMonth =
                         date.getMonth() === currentDate.getMonth();
@@ -291,7 +291,7 @@ function MiniMonthWidget({
                         <button
                             key={date.toISOString()}
                             onClick={() => onSelectDate(date)}
-                            className={`relative flex h-7 items-center justify-center rounded-lg text-xs transition hover:bg-slate-700 ${
+                            className={`relative flex h-6 items-center justify-center rounded-lg text-xs transition hover:bg-slate-700 ${
                                 isSelected
                                     ? "bg-violet-600 text-white"
                                     : isCurrentMonth
@@ -329,7 +329,7 @@ function CalendarViewHeader({
     onCreate: () => void;
 }) {
     return (
-        <div className="mb-3 flex flex-col gap-3 border-b border-slate-700/50 pb-3 xl:flex-row xl:items-center xl:justify-between">
+        <div className="mb-2 flex flex-col gap-2 border-b border-slate-700/50 pb-2 xl:flex-row xl:items-center xl:justify-between">
             <div>
                 <p className="text-xs text-slate-400">Calendar</p>
                 <h2 className="text-lg font-semibold capitalize text-white">
@@ -406,8 +406,8 @@ function CalendarSidePanel({
     const upcomingEvents = getUpcomingEvents(events);
 
     return (
-        <aside className="space-y-5">
-            <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
+        <aside className="space-y-4">
+            <section className="rounded-2xl bg-slate-800/80 p-3.5 shadow-lg">
                 <div className="flex items-center justify-between">
                     <div>
                         <h3 className="text-base font-semibold">Day details</h3>
@@ -442,7 +442,7 @@ function CalendarSidePanel({
                 </div>
             </section>
 
-            <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
+            <section className="rounded-2xl bg-slate-800/80 p-3.5 shadow-lg">
                 <h3 className="text-base font-semibold">Upcoming</h3>
                 <div className="mt-3 space-y-2">
                     {upcomingEvents.length === 0 ? (
@@ -450,7 +450,7 @@ function CalendarSidePanel({
                             No upcoming events.
                         </p>
                     ) : (
-                        upcomingEvents.slice(0, 4).map((event) => (
+                        upcomingEvents.slice(0, 3).map((event) => (
                         <button
                             key={event.id}
                             onClick={() => onEdit(event)}
@@ -628,8 +628,8 @@ export default function CalendarPage({
                 onPageChange={onPageChange}
             />
 
-            <main className="flex-1 p-4">
-                <Header />
+            <main className="flex-1 px-4 py-3">
+                <Header compact />
 
                 <section
                     className="grid gap-4"
@@ -638,7 +638,7 @@ export default function CalendarPage({
                         alignItems: "start",
                     }}
                 >
-                    <div className="min-w-0 space-y-3">
+                    <div className="min-w-0 space-y-2.5">
                         <CalendarSummaryCards
                             dashboard={dashboard}
                             onTodosClick={() => onPageChange("todos")}
@@ -747,7 +747,7 @@ export default function CalendarPage({
                                     }}
                                 >
                                     <div
-                                        className="p-3 text-xs font-semibold uppercase text-slate-500"
+                                        className="px-3 py-2 text-xs font-semibold uppercase text-slate-500"
                                         style={{ borderRight: calendarStrongLine }}
                                     >
                                         Time
@@ -763,7 +763,7 @@ export default function CalendarPage({
                                                     setCurrentDate(date);
                                                     onCalendarViewChange("day");
                                                 }}
-                                                className="p-3 text-left transition hover:bg-slate-700/50"
+                                                className="px-3 py-2 text-left transition hover:bg-slate-700/50"
                                                 style={{
                                                     borderRight:
                                                         index === weekDates.length - 1
@@ -792,7 +792,7 @@ export default function CalendarPage({
                                     {calendarHours.map((hour) => (
                                         <div
                                             key={hour}
-                                            className="grid min-h-7"
+                                            className="grid min-h-6"
                                             style={{
                                                 gridTemplateColumns: calendarGridColumns,
                                                 borderBottom:
@@ -984,7 +984,7 @@ export default function CalendarPage({
                                 return (
                                     <div
                                         key={hour}
-                                        className="grid min-h-7"
+                                        className="grid min-h-6"
                                         style={{
                                             gridTemplateColumns: dayGridColumns,
                                             borderBottom:

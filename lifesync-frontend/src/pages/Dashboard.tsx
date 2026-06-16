@@ -98,7 +98,7 @@ export default function Dashboard({ activePage, onPageChange }: DashboardProps) 
             <div className="flex min-h-screen bg-slate-900 text-white">
                 <Sidebar activePage={activePage} onPageChange={onPageChange} />
 
-                <main className="flex-1 p-6">
+                <main className="flex-1 px-4 py-3">
                     <Header />
                     <p className="text-slate-400">Laddar...</p>
                 </main>
@@ -110,7 +110,7 @@ export default function Dashboard({ activePage, onPageChange }: DashboardProps) 
         <div className="flex min-h-screen bg-slate-900 text-white">
             <Sidebar activePage={activePage} onPageChange={onPageChange} />
 
-            <main className="flex-1 p-4">
+            <main className="flex-1 px-4 py-3">
                 <Header />
 
                 <section className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-5">
@@ -126,7 +126,7 @@ export default function Dashboard({ activePage, onPageChange }: DashboardProps) 
                     <DashboardCard title="Reminders" value={dashboard.upcomingReminders} icon={<Clock size={18} />} />
                 </section>
 
-                <section className="mt-3 grid grid-cols-1 gap-2 xl:grid-cols-4">
+                <section className="mt-2 grid grid-cols-1 gap-2 xl:grid-cols-4">
                     <div className="xl:col-span-1">
                         <TodayScheduleWidget events={todayEvents} />
                     </div>
@@ -143,15 +143,15 @@ export default function Dashboard({ activePage, onPageChange }: DashboardProps) 
                     </div>
                 </section>
 
-                <section className="mt-3 grid grid-cols-1 gap-3 xl:grid-cols-3">
+                <section className="mt-2 grid grid-cols-1 gap-2 xl:grid-cols-3">
                     <WeatherWidget />
 
-                    <div className="rounded-2xl bg-slate-800/80 p-5 shadow-lg">
+                    <div className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
                         <h2 className="text-lg font-semibold text-white">Packages</h2>
                         <p className="mt-4 text-sm text-slate-400">No packages in transit.</p>
                     </div>
 
-                    <div className="rounded-2xl bg-slate-800/80 p-5 shadow-lg">
+                    <div className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
                         <h2 className="text-lg font-semibold text-white">Quick actions</h2>
                         <button className="mt-4 rounded-full bg-violet-500/20 px-4 py-2 text-sm text-violet-200">
                             + New event

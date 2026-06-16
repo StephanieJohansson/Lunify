@@ -38,12 +38,12 @@ export default function UpcomingTasksWidget({
     const renderTodo = (todo: TodoTask) => (
         <div
             key={todo.id}
-            className="rounded-xl bg-slate-900/60 p-1 transition hover:bg-slate-900/80"
+            className="rounded-xl bg-slate-900/60 p-2 transition hover:bg-slate-900/80"
         >
             <div className="flex items-start gap-3">
                 <button
                     onClick={() => onComplete?.(todo)}
-                    className="mt-1 flex h-5 w-5 items-center justify-center rounded-full border border-slate-500 transition hover:border-violet-400 hover:bg-violet-500/20"
+                    className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full border border-slate-500 transition hover:border-violet-400 hover:bg-violet-500/20"
                     aria-label="Complete todo"
                 >
                     <span className="h-2 w-2 rounded-full bg-transparent" />
@@ -65,15 +65,15 @@ export default function UpcomingTasksWidget({
     );
 
     return (
-        <section className="rounded-2xl bg-slate-800/80 p-3 shadow-lg">
-            <h2 className="mb-4 text-lg font-semibold text-white">
+        <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
+            <h2 className="mb-3 text-lg font-semibold text-white">
                 Upcoming Tasks
             </h2>
 
             {thisWeekTodos.length === 0 && unfinishedPreviousTodos.length === 0 ? (
                 <p className="text-sm text-slate-400">No upcoming tasks.</p>
             ) : (
-                <div className="space-y-5">
+                <div className="space-y-3">
                     <div>
                         <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-violet-300">
                             This week

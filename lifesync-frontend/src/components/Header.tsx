@@ -11,7 +11,11 @@ import {
 import CreateTodoModal from "./CreateTodoModal";
 import { createTodo } from "../services/TodoApi";
 
-export default function Header() {
+type HeaderProps = {
+    compact?: boolean;
+};
+
+export default function Header({ compact = true }: HeaderProps) {
     const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
     const [showCreateTodo, setShowCreateTodo] = useState(false);
 
@@ -24,7 +28,11 @@ export default function Header() {
     ];
 
     return (
-        <header className="mb-8 flex items-start justify-between gap-6">
+        <header
+            className={`flex items-start justify-between gap-6 ${
+                compact ? "mb-4" : "mb-8"
+            }`}
+        >
             <div>
                 <p className="text-slate-400">Welcome back</p>
 

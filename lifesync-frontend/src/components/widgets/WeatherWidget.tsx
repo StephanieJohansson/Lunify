@@ -123,8 +123,8 @@ export default function WeatherWidget() {
     }, []);
 
     return (
-        <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg text-sm">
-            <div className="mb-4 flex items-center justify-between">
+        <section className="rounded-2xl bg-slate-800/80 p-3 shadow-lg text-sm">
+            <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-white">Weather</h2>
                 <CloudSun className="text-violet-300" size={22} />
             </div>
@@ -143,7 +143,7 @@ export default function WeatherWidget() {
             )}
 
             {!loading && weather && (
-                <div className="space-y-4">
+                <div className="space-y-2.5">
                     <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-2 text-slate-400">
                             <MapPin size={15} className="text-violet-300" />
@@ -153,11 +153,11 @@ export default function WeatherWidget() {
                         <span className="text-xs text-slate-500">Updated now</span>
                     </div>
 
-                    <div className="rounded-2xl bg-slate-900/30 p-4">
+                    <div className="rounded-2xl bg-slate-900/30 p-3">
                         <div className="flex items-center justify-between">
                             <div>
                                 <div className="flex items-end gap-3">
-                                    <p className="text-5xl font-bold text-white">
+                                    <p className="text-4xl font-bold text-white">
                                         {Math.round(weather.temperature)}°C
                                     </p>
 
@@ -166,20 +166,20 @@ export default function WeatherWidget() {
                                     </p>
                                 </div>
 
-                                <div className="mt-3 flex gap-3 text-xs text-slate-400">
+                                <div className="mt-2 flex gap-3 text-xs text-slate-400">
                                     <span>H: {Math.round(weather.maxTemperature)}°</span>
                                     <span>L: {Math.round(weather.minTemperature)}°</span>
                                 </div>
                             </div>
 
-                            <div className="rounded-2xl bg-violet-500/20 p-5">
+                            <div className="rounded-2xl bg-violet-500/20 p-4">
                                 {getWeatherIcon(weather.condition)}
                             </div>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="rounded-xl bg-slate-900/40 p-3">
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="rounded-xl bg-slate-900/40 p-2.5">
                             <p className="text-xs uppercase tracking-wide text-slate-500">
                                 Wind
                             </p>
@@ -191,7 +191,7 @@ export default function WeatherWidget() {
                             </p>
                         </div>
 
-                        <div className="rounded-xl bg-slate-900/40 p-3">
+                        <div className="rounded-xl bg-slate-900/40 p-2.5">
                             <p className="text-xs uppercase tracking-wide text-slate-500">
                                 Rain
                             </p>
@@ -205,7 +205,7 @@ export default function WeatherWidget() {
                     </div>
 
                     {shouldShowReminder(weather.reminder) ? (
-                        <div className="rounded-xl bg-violet-500/10 p-3">
+                        <div className="rounded-xl bg-violet-500/10 p-2.5">
                             <p className="text-xs uppercase tracking-wide text-violet-300">
                                 Weather note
                             </p>
@@ -215,7 +215,7 @@ export default function WeatherWidget() {
                             </p>
                         </div>
                     ) : (
-                        <div className="flex items-center gap-2 rounded-xl bg-slate-900/40 p-3 text-sm text-slate-400">
+                        <div className="flex items-center gap-2 rounded-xl bg-slate-900/40 p-2.5 text-sm text-slate-400">
                             <CheckCircle2 size={16} className="text-emerald-300" />
                             <span>No weather alerts today.</span>
                         </div>

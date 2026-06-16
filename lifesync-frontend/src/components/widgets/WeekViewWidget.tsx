@@ -48,8 +48,8 @@ export default function WeekViewWidget({ events }: WeekViewWidgetProps) {
     });
 
     return (
-        <section className="rounded-2xl bg-slate-800/80 p-5 shadow-lg">
-            <div className="mb-4 flex items-center justify-between">
+        <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
+            <div className="mb-3 flex items-center justify-between">
                 <div>
                     <h2 className="text-lg font-semibold text-white">
                         This Week
@@ -64,13 +64,13 @@ export default function WeekViewWidget({ events }: WeekViewWidgetProps) {
                 </button>
             </div>
 
-            <div className="grid grid-cols-7 gap-3">
+            <div className="grid grid-cols-7 gap-2">
                 {weekDays.map((day) => (
                     <div
                         key={day.label}
-                        className="min-h-60 rounded-2xl bg-slate-900/40 p-3"
+                        className="min-h-52 rounded-2xl bg-slate-900/40 p-2.5"
                     >
-                        <div className="mb-3 flex items-center justify-between">
+                        <div className="mb-2 flex items-center justify-between">
                             <span className="text-xs uppercase tracking-wide text-slate-500">
                                 {day.label}
                             </span>

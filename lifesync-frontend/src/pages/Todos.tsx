@@ -106,7 +106,7 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
         <div className="flex min-h-screen bg-slate-900 text-white">
             <Sidebar activePage={activePage} onPageChange={onPageChange} />
 
-            <main className="flex-1 p-6">
+            <main className="flex-1 px-4 py-3">
                 <Header />
 
                 <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">

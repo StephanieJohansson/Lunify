@@ -13,8 +13,8 @@ function formatTime(dateTime: string) {
 
 export default function TodayScheduleWidget({ events }: TodayScheduleWidgetProps) {
     return (
-        <section className="rounded-2xl bg-slate-800/80 p-5 shadow-lg">
-            <h2 className="mb-4 text-lg font-semibold text-white">
+        <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
+            <h2 className="mb-3 text-lg font-semibold text-white">
                 Today Schedule
             </h2>
 
@@ -27,7 +27,7 @@ export default function TodayScheduleWidget({ events }: TodayScheduleWidgetProps
                     {events.map((event) => (
                         <div
                             key={event.id}
-                            className="flex items-center justify-between rounded-xl bg-slate-900/60 p-3 text-sm"
+                            className="flex items-center justify-between rounded-xl bg-slate-900/60 p-2.5 text-sm"
                         >
                             <div>
                                 <p className="font-medium text-white">
@@ -41,7 +41,7 @@ export default function TodayScheduleWidget({ events }: TodayScheduleWidgetProps
                                 )}
                             </div>
 
-                            <div className="flex flex-col gap-3 h-full">
+                            <div className="flex h-full flex-col gap-2">
                                 <p className="text-slate-300">
                                     {formatTime(event.startDateTime)}
                                 </p>
