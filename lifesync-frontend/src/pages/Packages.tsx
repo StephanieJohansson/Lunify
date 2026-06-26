@@ -14,6 +14,7 @@ import {
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import type { Page } from "../App";
+import type { AuthUser } from "../types/AuthUser";
 import {
     createPackageTracking,
     deletePackageTracking,
@@ -26,6 +27,8 @@ import {
 
 type PackagesProps = {
     activePage: Page;
+    currentUser: AuthUser;
+    onLogout: () => void;
     onPageChange: (page: Page) => void;
 };
 
@@ -293,7 +296,12 @@ function PackageCard({
     );
 }
 
-export default function Packages({ activePage, onPageChange }: PackagesProps) {
+export default function Packages({
+    activePage,
+    currentUser,
+    onLogout,
+    onPageChange,
+}: PackagesProps) {
     const [activePackages, setActivePackages] = useState<PackageTracking[]>([]);
     const [deliveredPackages, setDeliveredPackages] = useState<PackageTracking[]>([]);
     const [packageName, setPackageName] = useState("");
@@ -407,15 +415,19 @@ export default function Packages({ activePage, onPageChange }: PackagesProps) {
     }
 
     return (
-        <div className="flex min-h-screen bg-slate-900 text-white">
-            <Sidebar activePage={activePage} onPageChange={onPageChange} />
+        <div className="flex h-screen overflow-hidden bg-slate-900 text-white">
+            <Sidebar
+                activePage={activePage}
+                currentUser={currentUser}
+                onPageChange={onPageChange}
+            />
 
-            <main className="flex-1 px-4 py-3">
-                <Header />
+            <main className="flex min-w-0 flex-1 flex-col overflow-hidden px-4 py-3">
+                <Header currentUser={currentUser} onLogout={onLogout} />
 
-                <section className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_22rem]">
-                    <div className="space-y-3">
-                        <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
+                <section className="grid min-h-0 flex-1 grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_22rem]">
+                    <div className="flex min-h-0 flex-col space-y-3">
+                        <section className="rounded-xl bg-slate-800/80 p-4 shadow-lg">
                             <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                                 <div>
                                     <p className="text-xs text-slate-400">Packages</p>
@@ -452,7 +464,7 @@ export default function Packages({ activePage, onPageChange }: PackagesProps) {
                             </p>
                         )}
 
-                        <section className="space-y-2">
+                        <section className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
                             {loading ? (
                                 <p className="rounded-2xl bg-slate-800/80 p-4 text-sm text-slate-400">
                                     Loading packages...
@@ -478,8 +490,8 @@ export default function Packages({ activePage, onPageChange }: PackagesProps) {
                         </section>
                     </div>
 
-                    <aside className="space-y-3">
-                        <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
+                    <aside className="min-h-0 space-y-3 overflow-y-auto pr-1">
+                        <section className="rounded-xl bg-slate-800/80 p-4 shadow-lg">
                             <div className="flex items-center gap-2">
                                 <PackagePlus size={18} className="text-violet-300" />
                                 <h3 className="text-lg font-semibold">Add package</h3>
@@ -539,7 +551,7 @@ export default function Packages({ activePage, onPageChange }: PackagesProps) {
                             </form>
                         </section>
 
-                        <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
+                        <section className="rounded-xl bg-slate-800/80 p-4 shadow-lg">
                             <div className="flex items-center gap-2">
                                 <CalendarClock size={18} className="text-violet-300" />
                                 <h3 className="text-lg font-semibold">Calendar sync</h3>
@@ -551,7 +563,7 @@ export default function Packages({ activePage, onPageChange }: PackagesProps) {
                             </p>
                         </section>
 
-                        <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg">
+                        <section className="rounded-xl bg-slate-800/80 p-4 shadow-lg">
                             <div className="flex items-center gap-2">
                                 <CheckCircle2 size={18} className="text-emerald-300" />
                                 <h3 className="text-lg font-semibold">Delivered</h3>

@@ -1,6 +1,7 @@
 import type { CalendarEvent } from "./CalendarApi";
+import { apiFetch } from "./ApiClient";
 
-const BASE_URL = "http://localhost:8080/api/packages";
+const BASE_URL = "/api/packages";
 
 export type PackageTrackingEvent = {
     id: number;
@@ -50,19 +51,19 @@ async function parsePackageResponse(response: Response, errorMessage: string) {
 }
 
 export async function getPackageCalendarEvents(): Promise<CalendarEvent[]> {
-    const response = await fetch(`${BASE_URL}/calendar`);
+    const response = await apiFetch(`${BASE_URL}/calendar`);
 
     return parsePackageResponse(response, "Failed to fetch package calendar events");
 }
 
 export async function getUndeliveredPackages(): Promise<PackageTracking[]> {
-    const response = await fetch(`${BASE_URL}/undelivered`);
+    const response = await apiFetch(`${BASE_URL}/undelivered`);
 
     return parsePackageResponse(response, "Failed to fetch active packages");
 }
 
 export async function getDeliveredPackages(): Promise<PackageTracking[]> {
-    const response = await fetch(`${BASE_URL}/delivered`);
+    const response = await apiFetch(`${BASE_URL}/delivered`);
 
     return parsePackageResponse(response, "Failed to fetch delivered packages");
 }
@@ -70,7 +71,7 @@ export async function getDeliveredPackages(): Promise<PackageTracking[]> {
 export async function createPackageTracking(
     packageTracking: PackageTrackingPayload
 ): Promise<PackageTracking> {
-    const response = await fetch(BASE_URL, {
+    const response = await apiFetch(BASE_URL, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -82,7 +83,7 @@ export async function createPackageTracking(
 }
 
 export async function refreshPackageTracking(id: number): Promise<PackageTracking> {
-    const response = await fetch(`${BASE_URL}/${id}/refresh`, {
+    const response = await apiFetch(`${BASE_URL}/${id}/refresh`, {
         method: "POST",
     });
 
@@ -92,7 +93,7 @@ export async function refreshPackageTracking(id: number): Promise<PackageTrackin
 export async function updatePackageTracking(
     packageTracking: PackageTracking
 ): Promise<PackageTracking> {
-    const response = await fetch(`${BASE_URL}/${packageTracking.id}`, {
+    const response = await apiFetch(`${BASE_URL}/${packageTracking.id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -104,7 +105,7 @@ export async function updatePackageTracking(
 }
 
 export async function deletePackageTracking(id: number): Promise<void> {
-    const response = await fetch(`${BASE_URL}/${id}`, {
+    const response = await apiFetch(`${BASE_URL}/${id}`, {
         method: "DELETE",
     });
 

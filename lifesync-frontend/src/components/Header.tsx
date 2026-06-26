@@ -1,19 +1,33 @@
 import { useState } from "react";
 import {
     Bell,
-    Settings,
     Calendar,
     CheckSquare,
-    CreditCard,
-    Package,
     Clock,
+    CreditCard,
+    LogOut,
+    Package,
+    Settings,
 } from "lucide-react";
 import CreateTodoModal from "./CreateTodoModal";
 import { createTodo } from "../services/TodoApi";
+import type { AuthUser } from "../types/AuthUser";
 
-export default function Header() {
+type HeaderProps = {
+    currentUser: AuthUser;
+    onLogout: () => void;
+};
+
+export default function Header({ currentUser, onLogout }: HeaderProps) {
     const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
     const [showCreateTodo, setShowCreateTodo] = useState(false);
+    const firstName = currentUser.name.split(" ")[0] || currentUser.email;
+    const initial = (currentUser.name || currentUser.email).slice(0, 1).toUpperCase();
+    const today = new Date().toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+    });
 
     const quickAddItems = [
         { name: "New Event", icon: Calendar },
@@ -24,24 +38,32 @@ export default function Header() {
     ];
 
     return (
-        <header className="mb-8 flex items-start justify-between gap-6">
+        <header className="mb-3 flex items-start justify-between gap-4">
             <div>
                 <p className="text-slate-400">Welcome back</p>
 
-                <h1 className="text-4xl font-bold text-white whitespace-nowrap">
-                    Good morning, Stephanie <span>👋</span>
+                <h1 className="text-3xl font-bold text-white whitespace-nowrap">
+                    Good morning, {firstName}
                 </h1>
 
-                <p className="mt-2 text-slate-500">Thursday, June 11</p>
+                <p className="mt-1 text-sm text-slate-500">{today}</p>
             </div>
 
-            <div className="flex shrink-0 items-center gap-3">
-                <button className="rounded-xl bg-slate-800 p-3 text-slate-300 transition hover:text-white">
+            <div className="flex shrink-0 items-center gap-2">
+                <button className="rounded-xl bg-slate-800 p-2.5 text-slate-300 transition hover:text-white">
                     <Bell size={18} />
                 </button>
 
-                <button className="rounded-xl bg-slate-800 p-3 text-slate-300 transition hover:text-white">
+                <button className="rounded-xl bg-slate-800 p-2.5 text-slate-300 transition hover:text-white">
                     <Settings size={18} />
+                </button>
+
+                <button
+                    onClick={onLogout}
+                    className="rounded-xl bg-slate-800 p-2.5 text-slate-300 transition hover:text-white"
+                    aria-label="Log out"
+                >
+                    <LogOut size={18} />
                 </button>
 
                 <div className="relative">
@@ -77,12 +99,12 @@ export default function Header() {
                     )}
                 </div>
 
-                <div className="flex items-center gap-3 rounded-xl bg-slate-800 px-4 py-2">
+                <div className="flex items-center gap-3 rounded-xl bg-slate-800 px-3 py-2">
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 font-bold text-white">
-                        S
+                        {initial}
                     </div>
 
-                    <span className="text-sm font-medium text-white">Stephanie</span>
+                    <span className="text-sm font-medium text-white">{firstName}</span>
                 </div>
             </div>
 

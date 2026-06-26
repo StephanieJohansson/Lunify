@@ -4,7 +4,6 @@ package se.stephanie.lifesync.todo;
 import org.springframework.stereotype.Service;
 import se.stephanie.lifesync.common.exception.ResourceNotFoundException;
 import se.stephanie.lifesync.user.User;
-import se.stephanie.lifesync.user.UserRepository;
 
 import java.util.List;
 
@@ -12,17 +11,14 @@ import java.util.List;
 public class TodoTaskService {
 
     private final TodoTaskRepository todoTaskRepository;
-    private final UserRepository userRepository;
 
-    public TodoTaskService(TodoTaskRepository todoTaskRepository, UserRepository userRepository) {
+    public TodoTaskService(TodoTaskRepository todoTaskRepository) {
         this.todoTaskRepository = todoTaskRepository;
-        this.userRepository = userRepository;
     }
 
     /* GET */
-    public List<TodoTask> getAllTodoTasks() {
-
-        return todoTaskRepository.findAll();
+    public List<TodoTask> getAllTodoTasks(Long userId) {
+        return todoTaskRepository.findByUserId(userId);
     }
 
     public TodoTask getTodoTaskById(Long id) {
@@ -31,32 +27,25 @@ public class TodoTaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Todo task not found with id: " + id));
     }
 
-    public List<TodoTask> getPendingTodoTask() {
-        return todoTaskRepository.findByCompletedFalse();
+    public List<TodoTask> getPendingTodoTask(Long userId) {
+        return todoTaskRepository.findByUserIdAndCompletedFalse(userId);
     }
 
-    public List<TodoTask> getCompletedTodoTask() {
-        return todoTaskRepository.findByCompletedTrue();
+    public List<TodoTask> getCompletedTodoTask(Long userId) {
+        return todoTaskRepository.findByUserIdAndCompletedTrue(userId);
     }
 
-    public long countPendingTodoTask() {
-        return todoTaskRepository.countByCompletedFalse();
+    public long countPendingTodoTask(Long userId) {
+        return todoTaskRepository.countByUserIdAndCompletedFalse(userId);
     }
 
-    public long countCompletedTodoTask() {
-        return todoTaskRepository.countByCompletedTrue();
+    public long countCompletedTodoTask(Long userId) {
+        return todoTaskRepository.countByUserIdAndCompletedTrue(userId);
     }
 
 
     /* POST */
-    public TodoTask createTodoTask(TodoTask task) {
-        Long defaultUserId = 1L; // TODO: replace with authenticated user later
-
-        User user = userRepository.findById(defaultUserId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Default user not found with id: " + defaultUserId
-                ));
-
+    public TodoTask createTodoTask(TodoTask task, User user) {
         task.setUser(user);
         task.setCompleted(false);
 
@@ -68,13 +57,10 @@ public class TodoTaskService {
     public TodoTask updateTodoTask(Long id, TodoTask task) {
         TodoTask existingTask = getTodoTaskById(id);
 
-        if (existingTask != null) {
-            existingTask.setTitle(task.getTitle());
-            existingTask.setDescription(task.getDescription());
-            existingTask.setCompleted(task.isCompleted());
-            return todoTaskRepository.save(existingTask);
-        }
-        return null;
+        existingTask.setTitle(task.getTitle());
+        existingTask.setDescription(task.getDescription());
+        existingTask.setCompleted(task.isCompleted());
+        return todoTaskRepository.save(existingTask);
     }
 
     /* DELETE */
@@ -83,11 +69,8 @@ public class TodoTaskService {
         todoTaskRepository.deleteById(id);
     }
 
-    public void clearCompletedTodoTasks() {
-        Long userId = 1L;
-
-        List<TodoTask> completedTodos =
-                todoTaskRepository.findByUserIdAndCompletedTrue(userId);
+    public void clearCompletedTodoTasks(Long userId) {
+        List<TodoTask> completedTodos = todoTaskRepository.findByUserIdAndCompletedTrue(userId);
 
         todoTaskRepository.deleteAll(completedTodos);
     }

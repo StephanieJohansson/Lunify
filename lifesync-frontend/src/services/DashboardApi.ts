@@ -1,9 +1,8 @@
 import type {DashboardSummary} from "../types/DashboardSummary";
+import { apiFetch } from "./ApiClient";
 
 export async function getDashboardSummary(): Promise<DashboardSummary> {
-    const response = await fetch(
-        "http://localhost:8080/api/dashboard/summary"
-    );
+    const response = await apiFetch("/api/dashboard/summary");
 
     return response.json();
 }

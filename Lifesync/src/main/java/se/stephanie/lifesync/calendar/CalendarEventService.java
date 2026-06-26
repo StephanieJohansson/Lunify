@@ -3,7 +3,6 @@ package se.stephanie.lifesync.calendar;
 import org.springframework.stereotype.Service;
 import se.stephanie.lifesync.common.exception.ResourceNotFoundException;
 import se.stephanie.lifesync.user.User;
-import se.stephanie.lifesync.user.UserRepository;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -14,14 +13,12 @@ import java.util.List;
 public class CalendarEventService {
 
     private final CalendarEventRepository calendarEventRepository;
-    private final UserRepository userRepository;
 
-    public CalendarEventService(CalendarEventRepository calendarEventRepository, UserRepository userRepository) {
+    public CalendarEventService(CalendarEventRepository calendarEventRepository) {
         this.calendarEventRepository = calendarEventRepository;
-        this.userRepository = userRepository;
     }
 
-    public List<CalendarEvent> getEventsForCurrentWeek() {
+    public List<CalendarEvent> getEventsForCurrentWeek(Long userId) {
         LocalDate today = LocalDate.now();
 
         LocalDate monday = today.with(DayOfWeek.MONDAY);
@@ -30,16 +27,18 @@ public class CalendarEventService {
         LocalDateTime startOfWeek = monday.atStartOfDay();
         LocalDateTime endOfWeek = sunday.atTime(23, 59, 59);
 
-        return calendarEventRepository.findByStartDateTimeBetweenOrderByStartDateTimeAsc(
+        return calendarEventRepository.findByUserIdAndStartDateTimeBetweenOrderByStartDateTimeAsc(
+                userId,
                 startOfWeek,
                 endOfWeek
         );
     }
 
-    public List<CalendarEvent> getEventsForToday() {
+    public List<CalendarEvent> getEventsForToday(Long userId) {
         LocalDate today = LocalDate.now();
 
-        return calendarEventRepository.findByStartDateTimeBetweenOrderByStartDateTimeAsc(
+        return calendarEventRepository.findByUserIdAndStartDateTimeBetweenOrderByStartDateTimeAsc(
+                userId,
                 today.atStartOfDay(),
                 today.atTime(23, 59, 59)
         );
@@ -48,8 +47,8 @@ public class CalendarEventService {
 
     /* GET */
 
-    public List<CalendarEvent> getAllEvents() {
-        return calendarEventRepository.findAll();
+    public List<CalendarEvent> getAllEvents(Long userId) {
+        return calendarEventRepository.findByUserIdOrderByStartDateTimeAsc(userId);
     }
 
     public CalendarEvent getEventById(Long id) {
@@ -59,14 +58,7 @@ public class CalendarEventService {
 
     /* POST */
 
-    public CalendarEvent createEvent(CalendarEvent event) {
-        Long defaultUserId = 1L;
-
-        User user = userRepository.findById(defaultUserId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Default user not found with id: " + defaultUserId
-                ));
-
+    public CalendarEvent createEvent(CalendarEvent event, User user) {
         event.setUser(user);
 
         return calendarEventRepository.save(event);

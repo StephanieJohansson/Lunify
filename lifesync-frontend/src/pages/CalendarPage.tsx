@@ -28,10 +28,13 @@ import { getDashboardSummary } from "../services/DashboardApi";
 import { getPackageCalendarEvents } from "../services/PackageApi";
 import type { DashboardSummary } from "../types/DashboardSummary";
 import type { CalendarView, Page } from "../App";
+import type { AuthUser } from "../types/AuthUser";
 
 type CalendarPageProps = {
     activePage: Page;
     activeCalendarView: CalendarView;
+    currentUser: AuthUser;
+    onLogout: () => void;
     onCalendarViewChange: (view: CalendarView) => void;
     onPageChange: (page: Page) => void;
 };
@@ -510,6 +513,8 @@ function CalendarSidePanel({
 export default function CalendarPage({
     activePage,
     activeCalendarView,
+    currentUser,
+    onLogout,
     onCalendarViewChange,
     onPageChange,
 }: CalendarPageProps) {
@@ -666,19 +671,20 @@ export default function CalendarPage({
               : heading;
 
     return (
-        <div className="flex min-h-screen bg-slate-900 text-white">
+        <div className="flex h-screen overflow-hidden bg-slate-900 text-white">
             <Sidebar
                 activePage={activePage}
                 activeCalendarView={activeCalendarView}
+                currentUser={currentUser}
                 onCalendarViewChange={onCalendarViewChange}
                 onPageChange={onPageChange}
             />
 
-            <main className="flex-1 p-4">
-                <Header />
+            <main className="flex min-w-0 flex-1 flex-col overflow-hidden p-3">
+                <Header currentUser={currentUser} onLogout={onLogout} />
 
                 <section
-                    className="grid gap-4"
+                    className="grid min-h-0 flex-1 gap-3 overflow-hidden"
                     style={{
                         gridTemplateColumns: calendarPageColumns,
                         alignItems: "start",

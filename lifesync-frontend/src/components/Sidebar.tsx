@@ -8,10 +8,12 @@ import {
 } from "lucide-react";
 
 import type { CalendarView, Page } from "../App";
+import type { AuthUser } from "../types/AuthUser";
 
 type SidebarProps = {
     activePage: Page;
     activeCalendarView?: CalendarView;
+    currentUser: AuthUser;
     onCalendarViewChange?: (view: CalendarView) => void;
     onPageChange: (page: Page) => void;
 };
@@ -26,9 +28,11 @@ const calendarViews = [
 export default function Sidebar({
     activePage,
     activeCalendarView = "month",
+    currentUser,
     onCalendarViewChange,
     onPageChange,
 }: SidebarProps) {
+    const firstName = currentUser.name.split(" ")[0] || currentUser.email;
     const menuItems = [
         { name: "Home", page: "dashboard", icon: Home },
         { name: "Calendar", page: "calendar", icon: CalendarDays },
@@ -43,7 +47,7 @@ export default function Sidebar({
     }[];
 
     return (
-        <aside className="hidden min-h-screen w-64 flex-col bg-slate-950 p-6 text-white md:flex">
+        <aside className="hidden h-screen w-64 flex-col bg-slate-950 p-6 text-white md:flex">
             <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 font-bold">
                     L
@@ -111,8 +115,8 @@ export default function Sidebar({
             </nav>
 
             <div className="mt-auto rounded-2xl bg-slate-900 p-4">
-                <p className="text-sm font-medium">Stephanie</p>
-                <p className="text-xs text-slate-500">Lunify workspace</p>
+                <p className="truncate text-sm font-medium">{firstName}</p>
+                <p className="truncate text-xs text-slate-500">{currentUser.email}</p>
             </div>
         </aside>
     );

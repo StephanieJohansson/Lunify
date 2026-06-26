@@ -1,7 +1,8 @@
 import type { TodoTask } from "../types/TodoTask";
+import { apiFetch } from "./ApiClient";
 
 export async function getPendingTodos(): Promise<TodoTask[]> {
-    const response = await fetch("http://localhost:8080/api/todos/pending");
+    const response = await apiFetch("/api/todos/pending");
 
     if (!response.ok) {
         throw new Error("Failed to fetch todos");
@@ -14,7 +15,7 @@ export async function createTodo(
     title: string,
     description: string
 ): Promise<TodoTask> {
-    const response = await fetch("http://localhost:8080/api/todos", {
+    const response = await apiFetch("/api/todos", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -34,7 +35,7 @@ export async function createTodo(
 }
 
 export async function completeTodo(todoId: number, todo: TodoTask): Promise<TodoTask> {
-    const response = await fetch(`http://localhost:8080/api/todos/${todoId}`, {
+    const response = await apiFetch(`/api/todos/${todoId}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -53,7 +54,7 @@ export async function completeTodo(todoId: number, todo: TodoTask): Promise<Todo
 }
 
 export async function getCompletedTodos(): Promise<TodoTask[]> {
-    const response = await fetch("http://localhost:8080/api/todos/completed");
+    const response = await apiFetch("/api/todos/completed");
 
     if (!response.ok) {
         throw new Error("Failed to fetch completed todos");
@@ -63,7 +64,7 @@ export async function getCompletedTodos(): Promise<TodoTask[]> {
 }
 
 export async function deleteTodo(todoId: number): Promise<void> {
-    const response = await fetch(`http://localhost:8080/api/todos/${todoId}`, {
+    const response = await apiFetch(`/api/todos/${todoId}`, {
         method: "DELETE",
     });
 
@@ -73,7 +74,7 @@ export async function deleteTodo(todoId: number): Promise<void> {
 }
 
 export async function restoreTodo(todoId: number, todo: TodoTask): Promise<TodoTask> {
-    const response = await fetch(`http://localhost:8080/api/todos/${todoId}`, {
+    const response = await apiFetch(`/api/todos/${todoId}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -92,7 +93,7 @@ export async function restoreTodo(todoId: number, todo: TodoTask): Promise<TodoT
 }
 
 export async function updateTodo(todo: TodoTask): Promise<TodoTask> {
-    const response = await fetch(`http://localhost:8080/api/todos/${todo.id}`, {
+    const response = await apiFetch(`/api/todos/${todo.id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -108,7 +109,7 @@ export async function updateTodo(todo: TodoTask): Promise<TodoTask> {
 }
 
 export async function clearCompletedTodos() {
-    await fetch("http://localhost:8080/api/todos/completed", {
+    await apiFetch("/api/todos/completed", {
         method: "DELETE",
     });
 }

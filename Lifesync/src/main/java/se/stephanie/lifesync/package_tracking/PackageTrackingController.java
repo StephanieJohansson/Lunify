@@ -3,6 +3,8 @@ package se.stephanie.lifesync.package_tracking;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import se.stephanie.lifesync.security.CurrentUserService;
+import se.stephanie.lifesync.user.User;
 
 import java.util.List;
 
@@ -11,10 +13,12 @@ import java.util.List;
 public class PackageTrackingController {
 
         private final PackageTrackingService service;
+        private final CurrentUserService currentUserService;
 
-        public PackageTrackingController(PackageTrackingService service) {
+        public PackageTrackingController(PackageTrackingService service, CurrentUserService currentUserService) {
 
             this.service = service;
+            this.currentUserService = currentUserService;
         }
 
         /* GET */
@@ -32,26 +36,24 @@ public class PackageTrackingController {
 
     @GetMapping("/delivered")
     public List<PackageTracking> getDeliveredPackages() {
-        Long userId = 1L; //TODO: replace with logged-in user from spring security
-        return service.getDeliveredPackageTrackings(userId);
+        return service.getDeliveredPackageTrackings(currentUserService.getCurrentUser().getId());
     }
 
     @GetMapping("/undelivered")
     public List<PackageTracking> getUndeliveredPackages() {
-        Long userId = 1L; //TODO: replace with logged-in user from spring security
-        return service.getUndeliveredPackageTrackings(userId);
+        return service.getUndeliveredPackageTrackings(currentUserService.getCurrentUser().getId());
     }
 
     @GetMapping("/calendar")
     public List<PackageCalendarEventResponse> getPackageCalendarEvents() {
-        Long userId = 1L; //TODO: replace with logged-in user from spring security
-        return service.getPackageCalendarEvents(userId);
+        return service.getPackageCalendarEvents(currentUserService.getCurrentUser().getId());
     }
 
         /* POST */
     @PostMapping
     public PackageTracking createPackageTracking(@Valid @RequestBody PackageTrackingRequest request) {
-        return service.createPackageTracking(request);
+        User user = currentUserService.getCurrentUser();
+        return service.createPackageTracking(request, user);
     }
 
     @PostMapping("/{id}/refresh")

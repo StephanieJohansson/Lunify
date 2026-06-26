@@ -14,13 +14,21 @@ import {
 } from "../services/TodoApi";
 import type { TodoTask } from "../types/TodoTask";
 import type { Page } from "../App";
+import type { AuthUser } from "../types/AuthUser";
 
 type TodosProps = {
     activePage: Page;
+    currentUser: AuthUser;
+    onLogout: () => void;
     onPageChange: (page: Page) => void;
 };
 
-export default function Todos({ activePage, onPageChange }: TodosProps) {
+export default function Todos({
+    activePage,
+    currentUser,
+    onLogout,
+    onPageChange,
+}: TodosProps) {
     const [pendingTodos, setPendingTodos] = useState<TodoTask[]>([]);
     const [completedTodos, setCompletedTodos] = useState<TodoTask[]>([]);
     const [showCreateTodo, setShowCreateTodo] = useState(false);
@@ -103,16 +111,20 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
     };
 
     return (
-        <div className="flex min-h-screen bg-slate-900 text-white">
-            <Sidebar activePage={activePage} onPageChange={onPageChange} />
+        <div className="flex h-screen overflow-hidden bg-slate-900 text-white">
+            <Sidebar
+                activePage={activePage}
+                currentUser={currentUser}
+                onPageChange={onPageChange}
+            />
 
-            <main className="flex-1 p-6">
-                <Header />
+            <main className="flex min-w-0 flex-1 flex-col overflow-hidden p-4">
+                <Header currentUser={currentUser} onLogout={onLogout} />
 
-                <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-                    <section className="rounded-2xl bg-slate-800/80 p-5 shadow-lg">
+                <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-2">
+                    <section className="flex min-h-0 flex-col rounded-xl bg-slate-800/80 p-4 shadow-lg">
                         <div className="mb-4 flex items-center justify-between">
-                            <h2 className="text-xl font-semibold">Pending Todos</h2>
+                            <h2 className="text-lg font-semibold">Pending Todos</h2>
 
                             <button
                                 onClick={() => setShowCreateTodo(true)}
@@ -125,7 +137,7 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
                         {pendingTodos.length === 0 ? (
                             <p className="text-slate-400">No pending todos yet.</p>
                         ) : (
-                            <div className="space-y-1">
+                            <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
                                 {pendingTodos.map((todo) => (
                                     <div
                                         key={todo.id}
@@ -169,9 +181,9 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
                         )}
                     </section>
 
-                    <section className="rounded-2xl bg-slate-800/80 p-5 shadow-lg">
+                    <section className="flex min-h-0 flex-col rounded-xl bg-slate-800/80 p-4 shadow-lg">
                         <div className="mb-4 flex items-center justify-between">
-                            <h2 className="text-xl font-semibold">Completed Todos</h2>
+                            <h2 className="text-lg font-semibold">Completed Todos</h2>
 
                             <button
                                 onClick={handleClearCompletedTodos}
@@ -183,7 +195,7 @@ export default function Todos({ activePage, onPageChange }: TodosProps) {
                         {completedTodos.length === 0 ? (
                             <p className="text-slate-400">No completed todos yet.</p>
                         ) : (
-                            <div className="space-y-1">
+                            <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
                                 {completedTodos.map((todo) => (
                                     <div
                                         key={todo.id}
