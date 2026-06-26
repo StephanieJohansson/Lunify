@@ -28,6 +28,8 @@ import {
 type PackagesProps = {
     activePage: Page;
     currentUser: AuthUser;
+    onCreateEvent: () => void;
+    onCreatePackage: () => void;
     onLogout: () => void;
     onPageChange: (page: Page) => void;
 };
@@ -299,6 +301,8 @@ function PackageCard({
 export default function Packages({
     activePage,
     currentUser,
+    onCreateEvent,
+    onCreatePackage,
     onLogout,
     onPageChange,
 }: PackagesProps) {
@@ -423,7 +427,12 @@ export default function Packages({
             />
 
             <main className="flex min-w-0 flex-1 flex-col overflow-hidden px-4 py-3">
-                <Header currentUser={currentUser} onLogout={onLogout} />
+                <Header
+                    currentUser={currentUser}
+                    onCreateEvent={onCreateEvent}
+                    onCreatePackage={onCreatePackage}
+                    onLogout={onLogout}
+                />
 
                 <section className="grid min-h-0 flex-1 grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_22rem]">
                     <div className="flex min-h-0 flex-col space-y-3">

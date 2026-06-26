@@ -5,6 +5,9 @@ import {
     CreditCard,
     Package,
     Bell,
+    CloudSun,
+    Settings,
+    Users,
 } from "lucide-react";
 
 import type { CalendarView, Page } from "../App";
@@ -40,6 +43,9 @@ export default function Sidebar({
         { name: "Payments", page: null, icon: CreditCard },
         { name: "Packages", page: "packages", icon: Package },
         { name: "Reminders", page: null, icon: Bell },
+        { name: "Family", page: null, icon: Users },
+        { name: "Weather", page: null, icon: CloudSun },
+        { name: "Settings", page: null, icon: Settings },
     ] satisfies {
         name: string;
         page: Page | null;

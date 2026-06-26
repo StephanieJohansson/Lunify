@@ -19,6 +19,8 @@ import type { AuthUser } from "../types/AuthUser";
 type TodosProps = {
     activePage: Page;
     currentUser: AuthUser;
+    onCreateEvent: () => void;
+    onCreatePackage: () => void;
     onLogout: () => void;
     onPageChange: (page: Page) => void;
 };
@@ -26,6 +28,8 @@ type TodosProps = {
 export default function Todos({
     activePage,
     currentUser,
+    onCreateEvent,
+    onCreatePackage,
     onLogout,
     onPageChange,
 }: TodosProps) {
@@ -119,7 +123,12 @@ export default function Todos({
             />
 
             <main className="flex min-w-0 flex-1 flex-col overflow-hidden p-4">
-                <Header currentUser={currentUser} onLogout={onLogout} />
+                <Header
+                    currentUser={currentUser}
+                    onCreateEvent={onCreateEvent}
+                    onCreatePackage={onCreatePackage}
+                    onLogout={onLogout}
+                />
 
                 <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-2">
                     <section className="flex min-h-0 flex-col rounded-xl bg-slate-800/80 p-4 shadow-lg">

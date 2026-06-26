@@ -4,41 +4,22 @@ import {
     CloudRain,
     CloudSnow,
     CloudSun,
+    MapPin,
     Sun,
     Zap,
-    MapPin,
-    CheckCircle2,
 } from "lucide-react";
 import { getWeather, type WeatherResponse } from "../../services/WeatherApi";
 
-function getWeatherIcon(condition: string) {
+function getWeatherIcon(condition: string, size = 36) {
     const lowerCondition = condition.toLowerCase();
 
-    if (lowerCondition.includes("clear")) return <Sun className="text-yellow-300" size={30} />;
-    if (lowerCondition.includes("rain")) return <CloudRain className="text-blue-300" size={30} />;
-    if (lowerCondition.includes("snow")) return <CloudSnow className="text-sky-200" size={30} />;
-    if (lowerCondition.includes("thunder")) return <Zap className="text-yellow-300" size={30} />;
-    if (lowerCondition.includes("cloud")) return <CloudSun className="text-violet-300" size={30} />;
+    if (lowerCondition.includes("clear")) return <Sun className="text-yellow-300" size={size} />;
+    if (lowerCondition.includes("rain")) return <CloudRain className="text-blue-300" size={size} />;
+    if (lowerCondition.includes("snow")) return <CloudSnow className="text-sky-200" size={size} />;
+    if (lowerCondition.includes("thunder")) return <Zap className="text-yellow-300" size={size} />;
+    if (lowerCondition.includes("cloud")) return <CloudSun className="text-violet-300" size={size} />;
 
-    return <Cloud className="text-violet-300" size={30} />;
-}
-
-function shouldShowReminder(reminder: string) {
-    return reminder && reminder !== "No special weather reminder today.";
-}
-
-function getWindLabel(windSpeed: number) {
-    if (windSpeed < 2) return "Calm";
-    if (windSpeed < 6) return "Light wind";
-    if (windSpeed < 10) return "Windy";
-    return "Strong wind";
-}
-
-function getRainLabel(precipitation: number) {
-    if (precipitation <= 0) return "No rain";
-    if (precipitation < 1) return "Light rain";
-    if (precipitation < 4) return "Rain expected";
-    return "Heavy rain";
+    return <Cloud className="text-violet-300" size={size} />;
 }
 
 type NominatimResponse = {
@@ -123,103 +104,81 @@ export default function WeatherWidget() {
     }, []);
 
     return (
-        <section className="rounded-2xl bg-slate-800/80 p-4 shadow-lg text-sm">
-            <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-white">Weather</h2>
-                <CloudSun className="text-violet-300" size={22} />
+        <section className="flex h-full min-h-0 flex-col rounded-xl bg-slate-800/80 p-3 text-sm shadow-lg">
+            <div className="mb-2 flex items-center justify-between">
+                <h2 className="text-base font-semibold text-white">Weather</h2>
+                <CloudSun className="text-violet-300" size={18} />
             </div>
 
             {loading && (
-                <p className="text-sm text-slate-400">Loading weather...</p>
+                <div className="space-y-3">
+                    <span className="block h-3 w-32 rounded-full bg-slate-700/50" />
+                    <span className="block h-10 w-24 rounded-full bg-slate-700/30" />
+                    <div className="grid grid-cols-3 gap-2">
+                        <span className="h-11 rounded-xl bg-slate-900/40" />
+                        <span className="h-11 rounded-xl bg-slate-900/40" />
+                        <span className="h-11 rounded-xl bg-slate-900/40" />
+                    </div>
+                </div>
             )}
 
             {!loading && error && (
-                <div>
-                    <p className="text-sm text-slate-400">{error}</p>
-                    <p className="mt-2 text-xs text-slate-500">
+                <div className="rounded-xl bg-slate-900/40 p-3 text-sm text-slate-400">
+                    <p>{error}</p>
+                    <p className="mt-1 text-xs text-slate-500">
                         Allow location access to see local weather.
                     </p>
                 </div>
             )}
 
             {!loading && weather && (
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2 text-slate-400">
-                            <MapPin size={15} className="text-violet-300" />
-                            <span>{locationName}</span>
-                        </div>
-
-                        <span className="text-xs text-slate-500">Updated now</span>
+                <div className="flex min-h-0 flex-1 flex-col justify-between gap-2.5">
+                    <div className="flex items-center gap-2 text-xs text-slate-400">
+                        <MapPin size={14} className="text-violet-300" />
+                        <span className="truncate">{locationName}</span>
                     </div>
 
-                    <div className="rounded-2xl bg-slate-900/30 p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <div className="flex items-end gap-3">
-                                    <p className="text-5xl font-bold text-white">
-                                        {Math.round(weather.temperature)}°C
-                                    </p>
-
-                                    <p className="pb-2 text-sm text-slate-300">
-                                        {weather.condition}
-                                    </p>
-                                </div>
-
-                                <div className="mt-3 flex gap-3 text-xs text-slate-400">
-                                    <span>H: {Math.round(weather.maxTemperature)}°</span>
-                                    <span>L: {Math.round(weather.minTemperature)}°</span>
-                                </div>
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                            <div className="flex items-end gap-2">
+                                <p className="text-4xl font-semibold leading-none text-white">
+                                    {Math.round(weather.temperature)}°C
+                                </p>
+                                <p className="pb-1 text-sm text-slate-300">
+                                    {weather.condition}
+                                </p>
                             </div>
 
-                            <div className="rounded-2xl bg-violet-500/20 p-5">
-                                {getWeatherIcon(weather.condition)}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="rounded-xl bg-slate-900/40 p-3">
-                            <p className="text-xs uppercase tracking-wide text-slate-500">
-                                Wind
-                            </p>
-                            <p className="mt-1 text-sm font-medium text-slate-200">
-                                {getWindLabel(weather.windSpeed)}
-                            </p>
                             <p className="mt-1 text-xs text-slate-500">
+                                H: {Math.round(weather.maxTemperature)}° · L: {Math.round(weather.minTemperature)}°
+                            </p>
+                        </div>
+
+                        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-violet-500/20">
+                            {getWeatherIcon(weather.condition)}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2">
+                        <div className="rounded-xl bg-slate-900/40 px-3 py-2">
+                            <p className="text-xs text-slate-500">Rain</p>
+                            <p className="mt-0.5 text-sm font-medium text-slate-200">
+                                {weather.precipitation.toFixed(1)} mm
+                            </p>
+                        </div>
+
+                        <div className="rounded-xl bg-slate-900/40 px-3 py-2">
+                            <p className="text-xs text-slate-500">Wind</p>
+                            <p className="mt-0.5 text-sm font-medium text-slate-200">
                                 {weather.windSpeed.toFixed(1)} m/s
                             </p>
                         </div>
 
-                        <div className="rounded-xl bg-slate-900/40 p-3">
-                            <p className="text-xs uppercase tracking-wide text-slate-500">
-                                Rain
-                            </p>
-                            <p className="mt-1 text-sm font-medium text-slate-200">
-                                {getRainLabel(weather.precipitation)}
-                            </p>
-                            <p className="mt-1 text-xs text-slate-500">
-                                {weather.precipitation.toFixed(1)} mm
-                            </p>
+                        <div className="rounded-xl bg-slate-900/40 px-3 py-2">
+                            <p className="text-xs text-slate-500">UV-index</p>
+                            <p className="mt-0.5 text-sm font-medium text-slate-200">2</p>
                         </div>
                     </div>
-
-                    {shouldShowReminder(weather.reminder) ? (
-                        <div className="rounded-xl bg-violet-500/10 p-3">
-                            <p className="text-xs uppercase tracking-wide text-violet-300">
-                                Weather note
-                            </p>
-
-                            <p className="mt-1 text-sm text-slate-300">
-                                {weather.reminder}
-                            </p>
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-2 rounded-xl bg-slate-900/40 p-3 text-sm text-slate-400">
-                            <CheckCircle2 size={16} className="text-emerald-300" />
-                            <span>No weather alerts today.</span>
-                        </div>
-                    )}
                 </div>
             )}
         </section>

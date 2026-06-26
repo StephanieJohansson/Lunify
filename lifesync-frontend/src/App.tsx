@@ -15,6 +15,7 @@ function App() {
     const [calendarView, setCalendarView] = useState<CalendarView>("month");
     const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
     const [authLoading, setAuthLoading] = useState(true);
+    const [createEventRequest, setCreateEventRequest] = useState(0);
 
     useEffect(() => {
         getCurrentUser()
@@ -30,6 +31,20 @@ function App() {
                 setCurrentUser(null);
                 setPage("dashboard");
             });
+    }
+
+    function handleCreateEvent() {
+        setPage("calendar");
+        setCreateEventRequest((current) => current + 1);
+    }
+
+    function handleCreatePackage() {
+        setPage("packages");
+    }
+
+    function handleOpenTodaySchedule() {
+        setCalendarView("day");
+        setPage("calendar");
     }
 
     if (authLoading) {
@@ -49,6 +64,8 @@ function App() {
             <Todos
                 activePage={page}
                 currentUser={currentUser}
+                onCreateEvent={handleCreateEvent}
+                onCreatePackage={handleCreatePackage}
                 onLogout={handleLogout}
                 onPageChange={setPage}
             />
@@ -60,7 +77,10 @@ function App() {
             <CalendarPage
                 activePage={page}
                 activeCalendarView={calendarView}
+                createEventRequest={createEventRequest}
                 currentUser={currentUser}
+                onCreateEvent={handleCreateEvent}
+                onCreatePackage={handleCreatePackage}
                 onLogout={handleLogout}
                 onCalendarViewChange={setCalendarView}
                 onPageChange={setPage}
@@ -73,6 +93,8 @@ function App() {
             <Packages
                 activePage={page}
                 currentUser={currentUser}
+                onCreateEvent={handleCreateEvent}
+                onCreatePackage={handleCreatePackage}
                 onLogout={handleLogout}
                 onPageChange={setPage}
             />
@@ -83,7 +105,10 @@ function App() {
         <Dashboard
             activePage={page}
             currentUser={currentUser}
+            onCreateEvent={handleCreateEvent}
+            onCreatePackage={handleCreatePackage}
             onLogout={handleLogout}
+            onOpenTodaySchedule={handleOpenTodaySchedule}
             onPageChange={setPage}
         />
     );
