@@ -15,10 +15,17 @@ import type { AuthUser } from "../types/AuthUser";
 
 type HeaderProps = {
     currentUser: AuthUser;
+    onCreateEvent?: () => void;
+    onCreatePackage?: () => void;
     onLogout: () => void;
 };
 
-export default function Header({ currentUser, onLogout }: HeaderProps) {
+export default function Header({
+    currentUser,
+    onCreateEvent,
+    onCreatePackage,
+    onLogout,
+}: HeaderProps) {
     const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
     const [showCreateTodo, setShowCreateTodo] = useState(false);
     const firstName = currentUser.name.split(" ")[0] || currentUser.email;
@@ -83,8 +90,18 @@ export default function Header({ currentUser, onLogout }: HeaderProps) {
                                     <button
                                         key={item.name}
                                         onClick={() => {
+                                            if (item.name === "New Event") {
+                                                onCreateEvent?.();
+                                                setIsQuickAddOpen(false);
+                                            }
+
                                             if (item.name === "New Todo") {
                                                 setShowCreateTodo(true);
+                                                setIsQuickAddOpen(false);
+                                            }
+
+                                            if (item.name === "New Package") {
+                                                onCreatePackage?.();
                                                 setIsQuickAddOpen(false);
                                             }
                                         }}

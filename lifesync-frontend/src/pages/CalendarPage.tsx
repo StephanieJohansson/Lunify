@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     CalendarPlus,
     ChevronLeft,
@@ -33,7 +33,10 @@ import type { AuthUser } from "../types/AuthUser";
 type CalendarPageProps = {
     activePage: Page;
     activeCalendarView: CalendarView;
+    createEventRequest: number;
     currentUser: AuthUser;
+    onCreateEvent: () => void;
+    onCreatePackage: () => void;
     onLogout: () => void;
     onCalendarViewChange: (view: CalendarView) => void;
     onPageChange: (page: Page) => void;
@@ -513,7 +516,10 @@ function CalendarSidePanel({
 export default function CalendarPage({
     activePage,
     activeCalendarView,
+    createEventRequest,
     currentUser,
+    onCreateEvent,
+    onCreatePackage,
     onLogout,
     onCalendarViewChange,
     onPageChange,
@@ -570,13 +576,29 @@ export default function CalendarPage({
         [currentDate, events]
     );
     const viewMode = activeCalendarView;
-    function openCreateModal(date = currentDate) {
+    const openCreateModal = useCallback((date = currentDate) => {
         const start = toDateTimeInputValue(date, 9);
         const end = toDateTimeInputValue(date, 10);
         setEditingEvent(null);
         setForm({ ...defaultForm, startDateTime: start, endDateTime: end });
         setIsModalOpen(true);
-    }
+    }, [currentDate]);
+
+    useEffect(() => {
+        const handleCreateEventRequest = () => openCreateModal();
+
+        window.addEventListener("lifesync:create-event", handleCreateEventRequest);
+
+        return () => {
+            window.removeEventListener("lifesync:create-event", handleCreateEventRequest);
+        };
+    }, [openCreateModal]);
+
+    useEffect(() => {
+        if (createEventRequest > 0) {
+            window.dispatchEvent(new Event("lifesync:create-event"));
+        }
+    }, [createEventRequest]);
 
     function openEditModal(event: CalendarEvent) {
         if (!isEditableCalendarEvent(event)) {
@@ -681,7 +703,12 @@ export default function CalendarPage({
             />
 
             <main className="flex min-w-0 flex-1 flex-col overflow-hidden p-3">
-                <Header currentUser={currentUser} onLogout={onLogout} />
+                <Header
+                    currentUser={currentUser}
+                    onCreateEvent={onCreateEvent}
+                    onCreatePackage={onCreatePackage}
+                    onLogout={onLogout}
+                />
 
                 <section
                     className="grid min-h-0 flex-1 gap-3 overflow-hidden"
@@ -779,7 +806,7 @@ export default function CalendarPage({
                 {viewMode === "week" && (
                     <section>
                         <div className="min-w-0 overflow-x-auto rounded-2xl bg-slate-800/80 shadow-lg">
-                            <div className="min-w-[56rem]">
+                            <div className="min-w-4xl">
                                 <div className="p-3 pb-0">
                                     <CalendarViewHeader
                                         title={calendarHeading}

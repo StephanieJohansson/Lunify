@@ -6,7 +6,6 @@ import CreateTodoModal from "../components/CreateTodoModal";
 import { getDashboardSummary } from "../services/DashboardApi";
 import type { DashboardSummary } from "../types/DashboardSummary";
 import {
-    Bell,
     CalendarPlus,
     CheckSquare,
     Clock,
@@ -36,7 +35,10 @@ import {
 type DashboardProps = {
     activePage: Page;
     currentUser: AuthUser;
+    onCreateEvent: () => void;
+    onCreatePackage: () => void;
     onLogout: () => void;
+    onOpenTodaySchedule: () => void;
     onPageChange: (page: Page) => void;
 };
 
@@ -67,37 +69,55 @@ function UpcomingCostsWidget({ count }: { count: number }) {
                     </div>
                 ))}
             </div>
+
+            <button
+                type="button"
+                disabled
+                className="mt-2 rounded-xl border border-violet-400/10 bg-slate-900/25 px-3 py-1.5 text-xs font-semibold text-slate-500"
+            >
+                Show all costs
+            </button>
         </section>
     );
 }
 
 function FamilyWidget() {
-    const rows = ["Emma", "Liam", "Sofia"];
+    const rows = ["Emma", "Liam"];
 
     return (
-        <section className="flex h-full min-h-0 flex-col rounded-xl bg-slate-800/80 p-4 shadow-lg">
-            <div className="mb-3 flex items-center justify-between">
+        <section className="flex h-full min-h-0 flex-col rounded-xl bg-slate-800/80 p-3 shadow-lg">
+            <div className="mb-2 flex items-center justify-between">
                 <h2 className="text-base font-semibold text-white">Family</h2>
                 <Users size={18} className="text-violet-300" />
             </div>
 
-            <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+            <div className="min-h-0 flex-1 space-y-1 overflow-hidden">
                 {rows.map((row, index) => (
                     <div
                         key={row}
-                        className="flex items-center gap-3 rounded-xl bg-slate-900/40 p-2.5"
+                        className="flex items-center gap-3 rounded-xl bg-slate-900/40 px-3 py-1.5"
                     >
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/20 text-xs font-semibold text-violet-100">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-violet-500/20 text-xs font-semibold text-violet-100">
                             {row.slice(0, 1)}
                         </div>
                         <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium text-slate-200">{row}</p>
-                            <p className="text-xs text-slate-500">
+                            <p className="truncate text-sm font-medium text-slate-200">{row}</p>
+                            <p className="truncate text-xs text-slate-500">
                                 {index === 0 ? "No events today" : "Ready to plan"}
                             </p>
                         </div>
                     </div>
                 ))}
+            </div>
+
+            <div className="mt-2 shrink-0">
+                <button
+                    type="button"
+                    disabled
+                    className="w-full rounded-xl border border-violet-400/10 bg-slate-900/25 px-3 py-1.5 text-xs font-semibold text-slate-500"
+                >
+                    Show all family
+                </button>
             </div>
         </section>
     );
@@ -139,7 +159,10 @@ function QuickActionsWidget({ onPageChange }: { onPageChange: (page: Page) => vo
 export default function Dashboard({
     activePage,
     currentUser,
+    onCreateEvent,
+    onCreatePackage,
     onLogout,
+    onOpenTodaySchedule,
     onPageChange,
 }: DashboardProps) {
     const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
@@ -225,7 +248,12 @@ export default function Dashboard({
                 />
 
                 <main className="min-w-0 flex-1 p-3">
-                    <Header currentUser={currentUser} onLogout={onLogout} />
+                    <Header
+                        currentUser={currentUser}
+                        onCreateEvent={onCreateEvent}
+                        onCreatePackage={onCreatePackage}
+                        onLogout={onLogout}
+                    />
                     <p className="text-slate-400">Laddar...</p>
                 </main>
             </div>
@@ -241,16 +269,20 @@ export default function Dashboard({
             />
 
             <main className="flex min-w-0 flex-1 flex-col overflow-hidden p-3">
-                <Header currentUser={currentUser} onLogout={onLogout} />
+                <Header
+                    currentUser={currentUser}
+                    onCreateEvent={onCreateEvent}
+                    onCreatePackage={onCreatePackage}
+                    onLogout={onLogout}
+                />
 
-                <section className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-5">
+                <section className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
                     <DashboardCard
                         title="Todos"
                         value={dashboard.pendingTodos}
                         onClick={() => onPageChange("todos")}
                         icon={<CheckSquare size={18} />}
                     />
-                    <DashboardCard title="Notifications" value={dashboard.unreadNotifications} icon={<Bell size={18} />} />
                     <DashboardCard title="Payments" value={dashboard.unpaidPayments} icon={<CreditCard size={18} />} />
                     <DashboardCard
                         title="Packages"
@@ -261,13 +293,19 @@ export default function Dashboard({
                     <DashboardCard title="Reminders" value={dashboard.upcomingReminders} icon={<Clock size={18} />} />
                 </section>
 
-                <section className="mt-2 grid min-h-0 flex-1 grid-cols-12 grid-rows-[minmax(0,1.35fr)_minmax(0,0.9fr)] gap-2">
+                <section className="mt-2 grid min-h-0 flex-1 grid-cols-12 grid-rows-[minmax(0,1.55fr)_minmax(0,0.7fr)] gap-2">
                     <div className="col-span-3 min-h-0">
-                        <TodayScheduleWidget events={todayEvents} />
+                        <TodayScheduleWidget
+                            events={todayEvents}
+                            onShowAll={onOpenTodaySchedule}
+                        />
                     </div>
 
                     <div className="col-span-6 min-h-0">
-                        <WeekViewWidget events={weekEvents} />
+                        <WeekViewWidget
+                            events={weekEvents}
+                            onShowAll={() => onPageChange("calendar")}
+                        />
                     </div>
 
                     <div className="col-span-3 grid min-h-0 grid-rows-2 gap-2">
@@ -275,26 +313,21 @@ export default function Dashboard({
                         <UpcomingTasksWidget
                             todos={upcomingTodos}
                             onComplete={handleCompleteTodo}
+                            onShowAll={() => onPageChange("todos")}
                         />
                     </div>
 
-                    <div className="col-span-3 min-h-0 rounded-xl bg-slate-800/80 p-4 shadow-lg">
-                        <div className="flex items-center justify-between gap-3">
+                    <div className="col-span-3 flex min-h-0 flex-col rounded-xl bg-slate-800/80 p-4 shadow-lg">
+                        <div className="mb-3 flex items-center justify-between gap-3">
                             <h2 className="text-base font-semibold text-white">Packages</h2>
-                            <button
-                                onClick={() => onPageChange("packages")}
-                                className="rounded-full bg-violet-500/20 px-3 py-1 text-xs font-semibold text-violet-200 transition hover:bg-violet-500/30"
-                            >
-                                Open
-                            </button>
                         </div>
 
                         {activePackages.length === 0 ? (
-                            <div className="mt-3 space-y-2">
-                                {["Carrier", "Tracking", "ETA"].map((row) => (
+                            <div className="min-h-0 flex-1 space-y-1.5 overflow-hidden">
+                                {["Carrier", "Tracking"].map((row) => (
                                     <div
                                         key={row}
-                                        className="flex items-center gap-3 rounded-xl border border-dashed border-slate-700/80 bg-slate-900/30 p-3"
+                                        className="flex items-center gap-3 rounded-xl border border-dashed border-slate-700/80 bg-slate-900/30 px-3 py-2"
                                     >
                                         <Package size={15} className="text-slate-600" />
                                         <span className="h-2 flex-1 rounded-full bg-slate-700/40" />
@@ -302,7 +335,7 @@ export default function Dashboard({
                                 ))}
                             </div>
                         ) : (
-                            <div className="mt-3 max-h-[calc(100%-3rem)] space-y-2 overflow-y-auto pr-1">
+                            <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
                                 {activePackages.map((packageTracking) => (
                                     <button
                                         key={packageTracking.id}
@@ -325,6 +358,16 @@ export default function Dashboard({
                                 ))}
                             </div>
                         )}
+
+                        <div className="mt-2 shrink-0">
+                            <button
+                                type="button"
+                                onClick={() => onPageChange("packages")}
+                                className="w-full rounded-xl border border-violet-400/20 bg-slate-900/35 px-3 py-1.5 text-xs font-semibold text-violet-200 transition hover:bg-violet-500/15"
+                            >
+                                Show all packages
+                            </button>
+                        </div>
                     </div>
 
                     <div className="col-span-3 min-h-0">
