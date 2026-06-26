@@ -1,5 +1,6 @@
 package se.stephanie.lifesync.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "app_user")
+@Table(name = "app_user", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @Getter
 @Setter
 public class User {
@@ -20,7 +21,11 @@ public class User {
     private String name;
 
     @Email
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @JsonIgnore
+    private String passwordHash;
 
     private String phoneNumber;
 

@@ -1,3 +1,5 @@
+import { apiFetch } from "./ApiClient";
+
 export type CalendarEvent = {
     id: number | string;
     title: string;
@@ -39,7 +41,7 @@ export type CalendarEventPayload = {
     recurring: boolean;
 };
 
-const BASE_URL = "http://localhost:8080/api/events";
+const BASE_URL = "/api/events";
 
 async function parseEventResponse(response: Response, errorMessage: string) {
     if (!response.ok) {
@@ -50,19 +52,19 @@ async function parseEventResponse(response: Response, errorMessage: string) {
 }
 
 export async function getAllEvents(): Promise<CalendarEvent[]> {
-    const response = await fetch(BASE_URL);
+    const response = await apiFetch(BASE_URL);
 
     return parseEventResponse(response, "Failed to fetch calendar events");
 }
 
 export async function getTodayEvents(): Promise<CalendarEvent[]> {
-    const response = await fetch(`${BASE_URL}/today`);
+    const response = await apiFetch(`${BASE_URL}/today`);
 
     return parseEventResponse(response, "Failed to fetch today events");
 }
 
 export async function getWeekEvents(): Promise<CalendarEvent[]> {
-    const response = await fetch(`${BASE_URL}/week`);
+    const response = await apiFetch(`${BASE_URL}/week`);
 
     return parseEventResponse(response, "Failed to fetch week events");
 }
@@ -70,7 +72,7 @@ export async function getWeekEvents(): Promise<CalendarEvent[]> {
 export async function createEvent(
     event: CalendarEventPayload
 ): Promise<CalendarEvent> {
-    const response = await fetch(BASE_URL, {
+    const response = await apiFetch(BASE_URL, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -85,7 +87,7 @@ export async function updateEvent(
     id: number,
     event: CalendarEventPayload
 ): Promise<CalendarEvent> {
-    const response = await fetch(`${BASE_URL}/${id}`, {
+    const response = await apiFetch(`${BASE_URL}/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -97,7 +99,7 @@ export async function updateEvent(
 }
 
 export async function deleteEvent(id: number): Promise<void> {
-    const response = await fetch(`${BASE_URL}/${id}`, {
+    const response = await apiFetch(`${BASE_URL}/${id}`, {
         method: "DELETE",
     });
 

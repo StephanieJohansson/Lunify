@@ -3,6 +3,7 @@ package se.stephanie.lifesync.calendar;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import se.stephanie.lifesync.security.CurrentUserService;
 
 import java.util.List;
 
@@ -11,16 +12,18 @@ import java.util.List;
 public class CalendarEventController {
 
     private final CalendarEventService service;
+    private final CurrentUserService currentUserService;
 
-    public CalendarEventController(CalendarEventService service) {
+    public CalendarEventController(CalendarEventService service, CurrentUserService currentUserService) {
         this.service = service;
+        this.currentUserService = currentUserService;
     }
 
     /* GET */
 
     @GetMapping
     public List<CalendarEvent> getAllEvents() {
-        return service.getAllEvents();
+        return service.getAllEvents(currentUserService.getCurrentUser().getId());
     }
 
     @GetMapping("/{id}")
@@ -35,19 +38,19 @@ public class CalendarEventController {
 
     @GetMapping("/today")
     public List<CalendarEvent> getTodayEvents() {
-        return service.getEventsForToday();
+        return service.getEventsForToday(currentUserService.getCurrentUser().getId());
     }
 
     @GetMapping("/week")
     public List<CalendarEvent> getWeekEvents() {
-        return service.getEventsForCurrentWeek();
+        return service.getEventsForCurrentWeek(currentUserService.getCurrentUser().getId());
     }
 
     /* POST */
 
     @PostMapping
     public CalendarEvent createEvent(@Valid @RequestBody CalendarEvent event) {
-        return service.createEvent(event);
+        return service.createEvent(event, currentUserService.getCurrentUser());
     }
 
     /* PUT */

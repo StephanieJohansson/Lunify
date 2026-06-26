@@ -3,7 +3,8 @@ package se.stephanie.lifesync.todo;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-import se.stephanie.lifesync.user.UserRepository;
+import se.stephanie.lifesync.security.CurrentUserService;
+import se.stephanie.lifesync.user.User;
 
 import java.util.List;
 
@@ -12,43 +13,38 @@ import java.util.List;
 public class TodoTaskController {
 
     private final TodoTaskService todoTaskService;
-    private final TodoTaskRepository todoTaskRepository;
-    private final UserRepository userRepository;
+    private final CurrentUserService currentUserService;
 
-    public TodoTaskController(TodoTaskService todoTaskService, TodoTaskRepository todoTaskRepository, UserRepository userRepository) {
+    public TodoTaskController(TodoTaskService todoTaskService, CurrentUserService currentUserService) {
 
         this.todoTaskService = todoTaskService;
-        this.todoTaskRepository = todoTaskRepository;
-        this.userRepository = userRepository;
+        this.currentUserService = currentUserService;
     }
 
     /* GET */
     @GetMapping
     public List<TodoTask> getAllTodoTasks() {
-
-        return todoTaskService.getAllTodoTasks();
+        return todoTaskService.getAllTodoTasks(currentUserService.getCurrentUser().getId());
     }
 
     @GetMapping("/pending")
     public List<TodoTask> getPendingTodoTasks() {
-        Long userId = 1L;
-        return todoTaskRepository.findByUserIdAndCompletedFalse(userId);
+        return todoTaskService.getPendingTodoTask(currentUserService.getCurrentUser().getId());
     }
 
     @GetMapping("/completed")
     public List<TodoTask> getCompletedTodoTasks() {
-        Long userId = 1L;
-        return todoTaskRepository.findByUserIdAndCompletedTrue(userId);
+        return todoTaskService.getCompletedTodoTask(currentUserService.getCurrentUser().getId());
     }
 
     @GetMapping("/pending/count")
     public long getPendingTodoTaskCount() {
-        return todoTaskService.countPendingTodoTask();
+        return todoTaskService.countPendingTodoTask(currentUserService.getCurrentUser().getId());
     }
 
     @GetMapping("/completed/count")
     public long getCompletedTodoTaskCount() {
-        return todoTaskService.countCompletedTodoTask();
+        return todoTaskService.countCompletedTodoTask(currentUserService.getCurrentUser().getId());
     }
 
     @GetMapping("/{id}")
@@ -61,7 +57,8 @@ public class TodoTaskController {
 
     @PostMapping
     public TodoTask createTask(@Valid @RequestBody TodoTask todoTask) {
-        return todoTaskService.createTodoTask(todoTask);
+        User user = currentUserService.getCurrentUser();
+        return todoTaskService.createTodoTask(todoTask, user);
     }
 
     /* PUT */
@@ -80,6 +77,6 @@ public class TodoTaskController {
 
     @DeleteMapping("/completed")
     public void clearCompletedTodoTasks() {
-        todoTaskService.clearCompletedTodoTasks();
+        todoTaskService.clearCompletedTodoTasks(currentUserService.getCurrentUser().getId());
     }
 }

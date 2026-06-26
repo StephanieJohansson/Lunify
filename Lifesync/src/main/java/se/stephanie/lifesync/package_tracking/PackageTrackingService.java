@@ -4,7 +4,6 @@ package se.stephanie.lifesync.package_tracking;
 import org.springframework.stereotype.Service;
 import se.stephanie.lifesync.common.exception.ResourceNotFoundException;
 import se.stephanie.lifesync.user.User;
-import se.stephanie.lifesync.user.UserRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,18 +15,15 @@ import java.util.List;
 public class PackageTrackingService {
 
     private final PackageTrackingRepository packageTrackingRepository;
-    private final UserRepository userRepository;
     private final BringTrackingClient bringTrackingClient;
     private final PostNordTrackingClient postNordTrackingClient;
 
     public PackageTrackingService(
             PackageTrackingRepository packageTrackingRepository,
-            UserRepository userRepository,
             BringTrackingClient bringTrackingClient,
             PostNordTrackingClient postNordTrackingClient
     ) {
         this.packageTrackingRepository = packageTrackingRepository;
-        this.userRepository = userRepository;
         this.bringTrackingClient = bringTrackingClient;
         this.postNordTrackingClient = postNordTrackingClient;
     }
@@ -62,14 +58,7 @@ public class PackageTrackingService {
     }
 
      /* POST */
-    public PackageTracking createPackageTracking(PackageTracking packageTracking) {
-        Long defaultUserId = 1L;
-
-        User user = userRepository.findById(defaultUserId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Default user not found with id: " + defaultUserId
-                ));
-
+    public PackageTracking createPackageTracking(PackageTracking packageTracking, User user) {
         packageTracking.setUser(user);
         packageTracking.setCarrier(normalizeCarrier(packageTracking.getCarrier()));
         packageTracking.setStatus(defaultStatus(packageTracking.getStatus()));
@@ -78,14 +67,14 @@ public class PackageTrackingService {
         return packageTrackingRepository.save(packageTracking);
     }
 
-    public PackageTracking createPackageTracking(PackageTrackingRequest request) {
+    public PackageTracking createPackageTracking(PackageTrackingRequest request, User user) {
         PackageTracking packageTracking = new PackageTracking();
         packageTracking.setPackageName(request.packageName());
         packageTracking.setTrackingNumber(request.trackingNumber());
         packageTracking.setCarrier(request.carrier());
         packageTracking.setStatus("REGISTERED");
 
-        PackageTracking savedPackageTracking = createPackageTracking(packageTracking);
+        PackageTracking savedPackageTracking = createPackageTracking(packageTracking, user);
 
         if (canRefreshCarrier(savedPackageTracking.getCarrier())) {
             try {

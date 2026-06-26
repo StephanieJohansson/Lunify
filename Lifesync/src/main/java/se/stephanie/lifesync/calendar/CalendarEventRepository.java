@@ -11,4 +11,10 @@ public interface CalendarEventRepository
     List<CalendarEvent> findByStartDateTimeBetweenOrderByStartDateTimeAsc(
             @NotNull LocalDateTime startDateTime, @NotNull LocalDateTime startDateTime2
     );
+
+    List<CalendarEvent> findByUserIdOrderByStartDateTimeAsc(Long userId);
+
+    List<CalendarEvent> findByUserIdAndStartDateTimeBetweenOrderByStartDateTimeAsc(
+            Long userId, @NotNull LocalDateTime startDateTime, @NotNull LocalDateTime startDateTime2
+    );
 }

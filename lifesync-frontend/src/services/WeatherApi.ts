@@ -1,3 +1,5 @@
+import { apiFetch } from "./ApiClient";
+
 export type WeatherResponse = {
     temperature: number;
     condition: string;
@@ -9,9 +11,7 @@ export type WeatherResponse = {
 };
 
 export async function getWeather(lat: number, lon: number): Promise<WeatherResponse> {
-    const response = await fetch(
-        `http://localhost:8080/api/weather?lat=${lat}&lon=${lon}`
-    );
+    const response = await apiFetch(`/api/weather?lat=${lat}&lon=${lon}`);
 
     if (!response.ok) {
         throw new Error("Failed to fetch weather");
