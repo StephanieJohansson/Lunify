@@ -75,6 +75,10 @@ function getNowLineTop(now: Date) {
     return (nowMinutes / totalMinutes) * 100;
 }
 
+function getHourTop(hour: number) {
+    return clamp(((hour - startHour) / (endHour - startHour)) * 100, 0, 96);
+}
+
 export default function WeekViewWidget({
     events,
     onShowAll,
@@ -113,7 +117,7 @@ export default function WeekViewWidget({
                 </button>
             </div>
 
-            <div className="grid min-h-0 flex-1 grid-cols-[3rem_repeat(7,minmax(0,1fr))] grid-rows-[2.6rem_minmax(0,1fr)] overflow-hidden rounded-xl bg-slate-900/25">
+            <div className="grid min-h-0 flex-1 grid-cols-[3rem_repeat(7,minmax(0,1fr))] grid-rows-[2.6rem_minmax(0,1fr)] overflow-hidden rounded-xl bg-slate-900/25 pb-4">
                 <div className="border-b border-slate-700/40" />
 
                 {weekDays.map((day, index) => {
@@ -146,7 +150,7 @@ export default function WeekViewWidget({
                             key={hour}
                             className="absolute right-2 -translate-y-1/2 text-[11px] text-slate-500"
                             style={{
-                                top: `${((hour - startHour) / (endHour - startHour)) * 100}%`,
+                                top: `${getHourTop(hour)}%`,
                             }}
                         >
                             {String(hour).padStart(2, "0")}:00
@@ -160,7 +164,7 @@ export default function WeekViewWidget({
                             key={hour}
                             className="pointer-events-none absolute left-0 right-0 border-t border-slate-700/35"
                             style={{
-                                top: `${((hour - startHour) / (endHour - startHour)) * 100}%`,
+                                top: `${getHourTop(hour)}%`,
                             }}
                         />
                     ))}
