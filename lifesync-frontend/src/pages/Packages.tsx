@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
-import type { Page } from "../App";
+import type { Page, SettingsSection } from "../App";
 import type { AuthUser } from "../types/AuthUser";
 import {
     createPackageTracking,
@@ -31,6 +31,7 @@ type PackagesProps = {
     onCreateEvent: () => void;
     onCreatePackage: () => void;
     onLogout: () => void;
+    onOpenSettings: (section: SettingsSection) => void;
     onPageChange: (page: Page) => void;
 };
 
@@ -304,6 +305,7 @@ export default function Packages({
     onCreateEvent,
     onCreatePackage,
     onLogout,
+    onOpenSettings,
     onPageChange,
 }: PackagesProps) {
     const [activePackages, setActivePackages] = useState<PackageTracking[]>([]);
@@ -432,6 +434,7 @@ export default function Packages({
                     onCreateEvent={onCreateEvent}
                     onCreatePackage={onCreatePackage}
                     onLogout={onLogout}
+                    onOpenSettings={onOpenSettings}
                 />
 
                 <section className="grid min-h-0 flex-1 grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_22rem]">

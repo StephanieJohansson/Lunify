@@ -30,4 +30,10 @@ public class User {
     private String phoneNumber;
 
     private boolean active;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean emailVerified;
+
+    @Column(nullable = false, columnDefinition = "bigint default 0")
+    private long sessionVersion;
 }

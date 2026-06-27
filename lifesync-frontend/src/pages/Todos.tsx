@@ -13,7 +13,7 @@ import {
     clearCompletedTodos,
 } from "../services/TodoApi";
 import type { TodoTask } from "../types/TodoTask";
-import type { Page } from "../App";
+import type { Page, SettingsSection } from "../App";
 import type { AuthUser } from "../types/AuthUser";
 
 type TodosProps = {
@@ -22,6 +22,7 @@ type TodosProps = {
     onCreateEvent: () => void;
     onCreatePackage: () => void;
     onLogout: () => void;
+    onOpenSettings: (section: SettingsSection) => void;
     onPageChange: (page: Page) => void;
 };
 
@@ -31,6 +32,7 @@ export default function Todos({
     onCreateEvent,
     onCreatePackage,
     onLogout,
+    onOpenSettings,
     onPageChange,
 }: TodosProps) {
     const [pendingTodos, setPendingTodos] = useState<TodoTask[]>([]);
@@ -128,6 +130,7 @@ export default function Todos({
                     onCreateEvent={onCreateEvent}
                     onCreatePackage={onCreatePackage}
                     onLogout={onLogout}
+                    onOpenSettings={onOpenSettings}
                 />
 
                 <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-2">
