@@ -216,7 +216,7 @@ export default function Dashboard({
                     </div>
 
                     <div className="col-span-3 min-h-0">
-                        <WeatherWidget />
+                        <WeatherWidget onShowAdvanced={() => onPageChange("weather")} />
                     </div>
 
                     <div className="col-span-3 min-h-0">

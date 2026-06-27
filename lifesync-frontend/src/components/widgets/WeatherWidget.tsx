@@ -1,76 +1,15 @@
 import { useEffect, useState } from "react";
 import {
-    Cloud,
-    CloudRain,
-    CloudSnow,
     CloudSun,
-    MapPin,
-    Sun,
-    Zap,
+    ArrowRight,
 } from "lucide-react";
 import { getWeather, type WeatherResponse } from "../../services/WeatherApi";
+import WeatherIcon from "../weather/WeatherIcon";
 
-function getWeatherIcon(condition: string, size = 36) {
-    const lowerCondition = condition.toLowerCase();
-
-    if (lowerCondition.includes("clear")) return <Sun className="text-yellow-300" size={size} />;
-    if (lowerCondition.includes("rain")) return <CloudRain className="text-blue-300" size={size} />;
-    if (lowerCondition.includes("snow")) return <CloudSnow className="text-sky-200" size={size} />;
-    if (lowerCondition.includes("thunder")) return <Zap className="text-yellow-300" size={size} />;
-    if (lowerCondition.includes("cloud")) return <CloudSun className="text-violet-300" size={size} />;
-
-    return <Cloud className="text-violet-300" size={size} />;
-}
-
-type NominatimResponse = {
-    address?: {
-        village?: string;
-        town?: string;
-        city?: string;
-        municipality?: string;
-        county?: string;
-        country?: string;
-    };
-};
-
-function formatLocationName(data: NominatimResponse) {
-    const address = data.address;
-
-    const place =
-        address?.village ||
-        address?.town ||
-        address?.city ||
-        address?.municipality ||
-        address?.county;
-
-    const country = address?.country;
-
-    if (place && country) {
-        return `${place}, ${country}`;
-    }
-
-    return place || country || "Your location";
-}
-
-export default function WeatherWidget() {
+export default function WeatherWidget({ onShowAdvanced }: { onShowAdvanced: () => void }) {
     const [weather, setWeather] = useState<WeatherResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [locationName, setLocationName] = useState("Your location");
-
-    async function getLocationName(latitude: number, longitude: number) {
-        const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-        );
-
-        if (!response.ok) {
-            return "Your location";
-        }
-
-        const data = await response.json();
-
-        return formatLocationName(data);
-    }
 
     useEffect(() => {
         const loadWeather = () => {
@@ -83,10 +22,6 @@ export default function WeatherWidget() {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
-
-                    getLocationName(latitude, longitude)
-                        .then(setLocationName)
-                        .catch(() => setLocationName("Your location"));
 
                     getWeather(latitude, longitude)
                         .then(setWeather)
@@ -133,11 +68,6 @@ export default function WeatherWidget() {
 
             {!loading && weather && (
                 <div className="flex min-h-0 flex-1 flex-col justify-between gap-2.5">
-                    <div className="flex items-center gap-2 text-xs text-slate-400">
-                        <MapPin size={14} className="text-violet-300" />
-                        <span className="truncate">{locationName}</span>
-                    </div>
-
                     <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
                             <div className="flex items-end gap-2">
@@ -155,7 +85,7 @@ export default function WeatherWidget() {
                         </div>
 
                         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-violet-500/20">
-                            {getWeatherIcon(weather.condition)}
+                            <WeatherIcon condition={weather.condition} />
                         </div>
                     </div>
 
@@ -181,6 +111,15 @@ export default function WeatherWidget() {
                     </div>
                 </div>
             )}
+
+            <button
+                type="button"
+                onClick={onShowAdvanced}
+                className="mt-auto flex w-full items-center justify-between border-t border-slate-700/70 pt-2.5 text-xs font-semibold text-violet-300 transition hover:text-violet-200"
+            >
+                Show advanced weather
+                <ArrowRight size={14} />
+            </button>
         </section>
     );
 }
