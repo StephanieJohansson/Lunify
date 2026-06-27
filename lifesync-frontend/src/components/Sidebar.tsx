@@ -44,7 +44,7 @@ export default function Sidebar({
         { name: "Packages", page: "packages", icon: Package },
         { name: "Reminders", page: null, icon: Bell },
         { name: "Family", page: null, icon: Users },
-        { name: "Weather", page: null, icon: CloudSun },
+        { name: "Weather", page: "weather", icon: CloudSun },
         { name: "Settings", page: "settings", icon: Settings },
     ] satisfies {
         name: string;

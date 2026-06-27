@@ -24,9 +24,6 @@ import java.util.List;
 @Component
 public class PostNordTrackingClient {
 
-    private static final String DEFAULT_BASE_URL =
-            "https://api2.postnord.com/rest";
-
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final String apiKey;
@@ -35,7 +32,7 @@ public class PostNordTrackingClient {
 
     public PostNordTrackingClient(
             @Value("${postnord.api.key:}") String apiKey,
-            @Value("${postnord.base-url:" + DEFAULT_BASE_URL + "}") String baseUrl,
+            @Value("${postnord.base-url:https://api2.postnord.com/rest}") String baseUrl,
             @Value("${postnord.locale:sv}") String locale
     ) {
         this.apiKey = apiKey;

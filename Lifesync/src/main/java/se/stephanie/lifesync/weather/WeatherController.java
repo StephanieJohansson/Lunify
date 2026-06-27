@@ -21,4 +21,12 @@ public class WeatherController {
     ) {
         return weatherService.getWeather(lat, lon);
     }
+
+    @GetMapping("/api/weather/forecast")
+    public WeatherForecastResponse getForecast(
+            @RequestParam double lat,
+            @RequestParam double lon
+    ) {
+        return weatherService.getForecast(lat, lon);
+    }
 }

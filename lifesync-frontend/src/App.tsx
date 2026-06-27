@@ -7,10 +7,11 @@ import Todos from "./pages/Todos";
 import SettingsPage from "./pages/SettingsPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import WeatherPage from "./pages/WeatherPage";
 import { getCurrentUser, logout } from "./services/AuthApi";
 import type { AuthUser } from "./types/AuthUser";
 
-export type Page = "dashboard" | "calendar" | "todos" | "packages" | "settings";
+export type Page = "dashboard" | "calendar" | "todos" | "packages" | "weather" | "settings";
 export type CalendarView = "month" | "week" | "day" | "year";
 export type SettingsSection = "account" | "security";
 
@@ -140,6 +141,20 @@ function App() {
                 onOpenSettings={handleOpenSettings}
                 onPageChange={setPage}
                 initialSection={settingsSection}
+            />
+        );
+    }
+
+    if (page === "weather") {
+        return (
+            <WeatherPage
+                activePage={page}
+                currentUser={currentUser}
+                onCreateEvent={handleCreateEvent}
+                onCreatePackage={handleCreatePackage}
+                onLogout={handleLogout}
+                onOpenSettings={handleOpenSettings}
+                onPageChange={setPage}
             />
         );
     }
