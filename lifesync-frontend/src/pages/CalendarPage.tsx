@@ -27,7 +27,7 @@ import {
 import { getDashboardSummary } from "../services/DashboardApi";
 import { getPackageCalendarEvents } from "../services/PackageApi";
 import type { DashboardSummary } from "../types/DashboardSummary";
-import type { CalendarView, Page } from "../App";
+import type { CalendarView, Page, SettingsSection } from "../App";
 import type { AuthUser } from "../types/AuthUser";
 
 type CalendarPageProps = {
@@ -38,6 +38,7 @@ type CalendarPageProps = {
     onCreateEvent: () => void;
     onCreatePackage: () => void;
     onLogout: () => void;
+    onOpenSettings: (section: SettingsSection) => void;
     onCalendarViewChange: (view: CalendarView) => void;
     onPageChange: (page: Page) => void;
 };
@@ -521,6 +522,7 @@ export default function CalendarPage({
     onCreateEvent,
     onCreatePackage,
     onLogout,
+    onOpenSettings,
     onCalendarViewChange,
     onPageChange,
 }: CalendarPageProps) {
@@ -708,6 +710,7 @@ export default function CalendarPage({
                     onCreateEvent={onCreateEvent}
                     onCreatePackage={onCreatePackage}
                     onLogout={onLogout}
+                    onOpenSettings={onOpenSettings}
                 />
 
                 <section

@@ -12,12 +12,14 @@ import {
 import CreateTodoModal from "./CreateTodoModal";
 import { createTodo } from "../services/TodoApi";
 import type { AuthUser } from "../types/AuthUser";
+import type { SettingsSection } from "../App";
 
 type HeaderProps = {
     currentUser: AuthUser;
     onCreateEvent?: () => void;
     onCreatePackage?: () => void;
     onLogout: () => void;
+    onOpenSettings?: (section: SettingsSection) => void;
 };
 
 export default function Header({
@@ -25,8 +27,10 @@ export default function Header({
     onCreateEvent,
     onCreatePackage,
     onLogout,
+    onOpenSettings,
 }: HeaderProps) {
     const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [showCreateTodo, setShowCreateTodo] = useState(false);
     const firstName = currentUser.name.split(" ")[0] || currentUser.email;
     const initial = (currentUser.name || currentUser.email).slice(0, 1).toUpperCase();
@@ -61,9 +65,41 @@ export default function Header({
                     <Bell size={18} />
                 </button>
 
-                <button className="rounded-xl bg-slate-800 p-2.5 text-slate-300 transition hover:text-white">
-                    <Settings size={18} />
-                </button>
+                <div className="relative">
+                    <button
+                        type="button"
+                        aria-label="Open settings menu"
+                        aria-expanded={isSettingsOpen}
+                        onClick={() => {
+                            setIsSettingsOpen((open) => !open);
+                            setIsQuickAddOpen(false);
+                        }}
+                        className="rounded-xl bg-slate-800 p-2.5 text-slate-300 transition hover:text-white"
+                    >
+                        <Settings size={18} />
+                    </button>
+                    {isSettingsOpen && (
+                        <div className="absolute right-0 z-20 mt-3 w-56 rounded-2xl border border-slate-700/70 bg-slate-800 p-2 shadow-xl">
+                            <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Settings</p>
+                            {[
+                                { label: "Account & email", section: "account" as const },
+                                { label: "Password & security", section: "security" as const },
+                            ].map((item) => (
+                                <button
+                                    key={item.section}
+                                    type="button"
+                                    onClick={() => {
+                                        onOpenSettings?.(item.section);
+                                        setIsSettingsOpen(false);
+                                    }}
+                                    className="w-full rounded-xl px-3 py-2 text-left text-sm text-slate-300 transition hover:bg-slate-700 hover:text-white"
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
 
                 <button
                     onClick={onLogout}
@@ -75,7 +111,10 @@ export default function Header({
 
                 <div className="relative">
                     <button
-                        onClick={() => setIsQuickAddOpen(!isQuickAddOpen)}
+                        onClick={() => {
+                            setIsQuickAddOpen(!isQuickAddOpen);
+                            setIsSettingsOpen(false);
+                        }}
                         className="rounded-full bg-violet-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-violet-500"
                     >
                         + New

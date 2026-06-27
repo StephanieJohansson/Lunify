@@ -14,7 +14,7 @@ import {
 import UpcomingTasksWidget from "../components/widgets/UpcomingTasksWidget";
 import WeatherWidget from "../components/widgets/WeatherWidget";
 import TodayScheduleWidget from "../components/widgets/TodayScheduleWidget";
-import type { Page } from "../App";
+import type { Page, SettingsSection } from "../App";
 import type { AuthUser } from "../types/AuthUser";
 import {
     getPendingTodos,
@@ -39,6 +39,7 @@ type DashboardProps = {
     onCreateEvent: () => void;
     onCreatePackage: () => void;
     onLogout: () => void;
+    onOpenSettings: (section: SettingsSection) => void;
     onOpenTodaySchedule: () => void;
     onPageChange: (page: Page) => void;
 };
@@ -49,6 +50,7 @@ export default function Dashboard({
     onCreateEvent,
     onCreatePackage,
     onLogout,
+    onOpenSettings,
     onOpenTodaySchedule,
     onPageChange,
 }: DashboardProps) {
@@ -140,6 +142,7 @@ export default function Dashboard({
                         onCreateEvent={onCreateEvent}
                         onCreatePackage={onCreatePackage}
                         onLogout={onLogout}
+                        onOpenSettings={onOpenSettings}
                     />
                     <p className="text-slate-400">Laddar...</p>
                 </main>
@@ -161,6 +164,7 @@ export default function Dashboard({
                     onCreateEvent={onCreateEvent}
                     onCreatePackage={onCreatePackage}
                     onLogout={onLogout}
+                    onOpenSettings={onOpenSettings}
                 />
 
                 <section className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">

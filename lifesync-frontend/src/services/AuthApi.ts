@@ -51,3 +51,36 @@ export async function logout(): Promise<void> {
         throw new Error("Could not log out");
     }
 }
+
+export async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    const response = await apiFetch("/api/auth/change-password", {
+        method: "POST",
+        body: JSON.stringify({ currentPassword, newPassword }),
+    });
+    if (!response.ok) {
+        throw new Error(response.status === 400 ? "Current password is incorrect, or the new password is unchanged." : "Could not change password.");
+    }
+}
+
+export async function sendEmailVerification(): Promise<void> {
+    const response = await apiFetch("/api/auth/email-verification", { method: "POST" });
+    if (!response.ok) {
+        throw new Error(response.status === 503 ? "Email delivery has not been configured yet." : "Could not send verification email.");
+    }
+}
+
+export async function requestPasswordReset(email: string): Promise<void> {
+    const response = await apiFetch("/api/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+    });
+    if (!response.ok) throw new Error("Could not process the request.");
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<void> {
+    const response = await apiFetch("/api/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify({ token, newPassword }),
+    });
+    if (!response.ok) throw new Error("This reset link is invalid or has expired.");
+}

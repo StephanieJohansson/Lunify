@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { LogIn, Mail, ShieldCheck, UserPlus } from "lucide-react";
-import { login, register } from "../services/AuthApi";
+import { login, register, requestPasswordReset } from "../services/AuthApi";
 import type { AuthUser } from "../types/AuthUser";
 
-type AuthMode = "login" | "register";
+type AuthMode = "login" | "register" | "forgot";
 
 type AuthPageProps = {
     onAuthenticated: (user: AuthUser) => void;
@@ -16,13 +16,24 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [notice, setNotice] = useState("");
 
     const isRegister = mode === "register";
+    const isForgot = mode === "forgot";
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setLoading(true);
         setError("");
+        setNotice("");
+
+        if (isForgot) {
+            requestPasswordReset(email)
+                .then(() => setNotice("If an account exists for that address, a reset link has been sent."))
+                .catch(() => setError("Could not process the request. Please try again later."))
+                .finally(() => setLoading(false));
+            return;
+        }
 
         const authAction = isRegister
             ? register({ name, email, password })
@@ -75,7 +86,7 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
                         <Mail className="text-sky-300" size={22} />
                         <p className="mt-3 text-sm font-semibold">Email ready</p>
                         <p className="mt-1 text-sm text-slate-400">
-                            Gmail or Outlook OAuth can be added when provider keys are ready.
+                            Secure verification and password recovery are supported by email.
                         </p>
                     </div>
                 </div>
@@ -83,7 +94,7 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
 
             <section className="flex items-center justify-center px-6 py-10">
                 <form onSubmit={handleSubmit} className="w-full max-w-sm">
-                    <div className="mb-6 flex rounded-xl bg-slate-900 p-1">
+                    {!isForgot && <div className="mb-6 flex rounded-xl bg-slate-900 p-1">
                         <button
                             type="button"
                             onClick={() => setMode("login")}
@@ -106,13 +117,15 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
                         >
                             Create
                         </button>
-                    </div>
+                    </div>}
 
                     <h2 className="text-2xl font-bold">
-                        {isRegister ? "Create your account" : "Welcome back"}
+                        {isForgot ? "Reset your password" : isRegister ? "Create your account" : "Welcome back"}
                     </h2>
                     <p className="mt-2 text-sm text-slate-400">
-                        {isRegister
+                        {isForgot
+                            ? "Enter your email and we will send a secure reset link if the account exists."
+                            : isRegister
                             ? "Use the email you want Lunify connected to."
                             : "Sign in to continue to your workspace."}
                     </p>
@@ -141,7 +154,7 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
                             />
                         </label>
 
-                        <label className="block">
+                        {!isForgot && <label className="block">
                             <span className="text-sm text-slate-300">Password</span>
                             <input
                                 value={password}
@@ -151,7 +164,7 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
                                 type="password"
                                 className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-violet-400"
                             />
-                        </label>
+                        </label>}
                     </div>
 
                     {error && (
@@ -160,17 +173,35 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
                         </p>
                     )}
 
+                    {!isForgot && !isRegister && (
+                        <button type="button" onClick={() => { setMode("forgot"); setError(""); }} className="mt-4 text-sm font-medium text-violet-300 hover:text-violet-200">
+                            Forgot password?
+                        </button>
+                    )}
+                    {notice && (
+                        <p className="mt-4 rounded-xl bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+                            {notice}
+                        </p>
+                    )}
+
                     <button
                         disabled={loading}
                         className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:cursor-wait disabled:opacity-60"
                     >
-                        {isRegister ? <UserPlus size={18} /> : <LogIn size={18} />}
+                        {isRegister ? <UserPlus size={18} /> : isForgot ? <Mail size={18} /> : <LogIn size={18} />}
                         {loading
                             ? "Working..."
-                            : isRegister
+                            : isForgot
+                              ? "Send reset link"
+                              : isRegister
                               ? "Create account"
                               : "Log in"}
                     </button>
+                    {isForgot && (
+                        <button type="button" onClick={() => { setMode("login"); setError(""); }} className="mt-4 w-full text-sm text-slate-400 hover:text-white">
+                            Back to login
+                        </button>
+                    )}
                 </form>
             </section>
         </main>
